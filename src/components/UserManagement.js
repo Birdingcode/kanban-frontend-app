@@ -6,8 +6,10 @@ import { Table } from "react-bootstrap"
 import Page from "./Page"
 
 import CreateUser from "./CreateUser"
+import axios from "axios"
 
 function UserManagement() {
+  console.log("rendering")
   const [state, setState] = useImmer([])
   useEffect(() => {
     //const ourRequest = Axios.CancelToken.source()
@@ -28,6 +30,21 @@ function UserManagement() {
     // }
   }, [])
 
+  const changeStatus = async (e, userID) => {
+    e.preventDefault()
+    try {
+      console.log(userID)
+      const response = await Axios.post("/changeStatus", { userID: userID }, { withCredentials: true })
+      console.log(response.data)
+      if (response.data) {
+        setState(response.data)
+      }
+      //setState(response.data)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   return (
     <Page title="User Management">
       <div style={{ display: "flex" }}>
@@ -37,6 +54,9 @@ function UserManagement() {
         <Link to={"/userManagement/changePassword"} className="nav-item nav-link">
           <button>Change Password</button>
         </Link>
+        <Link to={"/userManagement/changeEmail"} className="nav-item nav-link">
+          <button>Change Email</button>
+        </Link>
       </div>
       <Table striped bordered hover variant="dark">
         <thead>
@@ -45,6 +65,8 @@ function UserManagement() {
             <th>Username</th>
             <th>Email</th>
             <th>Role</th>
+            <th>Status</th>
+            <th>Change Status</th>
           </tr>
         </thead>
         <tbody>
@@ -54,6 +76,10 @@ function UserManagement() {
               <td>{item.username}</td>
               <td>{item.email}</td>
               <td>{item.role}</td>
+              <td>{item.status ? "True" : "False"}</td>
+              <td>
+                <button onClick={e => changeStatus(e, item.userID)}>Click</button>
+              </td>
             </tr>
           ))}
         </tbody>

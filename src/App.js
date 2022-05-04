@@ -18,6 +18,8 @@ import FlashMessages from "./components/FlashMessages"
 import Home from "./components/Home"
 import UserManagement from "./components/UserManagement"
 import CreateUser from "./components/CreateUser"
+import ChangePassword from "./components/ChangePassword"
+import ChangeEmail from "./components/ChangeEmail"
 
 export default function App() {
   const initialState = {
@@ -61,6 +63,8 @@ export default function App() {
             <Route path="/" element={state.loggedIn ? <Home /> : <CenterGuest />} />
             <Route path="/userManagement/" element={<UserManagement />} />
             <Route path="/userManagement/createUser" element={<CreateUser />} />
+            <Route path="/userManagement/changePassword" element={<ChangePassword />} />
+            <Route path="/userManagement/changeEmail" element={<ChangeEmail />} />
           </Routes>
         </BrowserRouter>
       </DispatchContext.Provider>

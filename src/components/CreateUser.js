@@ -206,7 +206,7 @@ function CreateUser() {
         }
       }
       fetchResults()
-      return () => ourRequest.cancel()
+      //return () => ourRequest.cancel()
     }
   }, [state.submitCount])
 
@@ -232,6 +232,9 @@ function CreateUser() {
                 Username{" "}
               </label>
               <input onChange={e => dispatch({ type: "usernameImmediately", value: e.target.value })} className="form__input" type="text" id="firstName" placeholder="Username" autoComplete="off" />
+              <CSSTransition in={state.username.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
+                <div className="alert alert-danger small liveValidateMessage">{state.username.message}</div>
+              </CSSTransition>
             </div>
 
             <div className="email">
@@ -245,6 +248,9 @@ function CreateUser() {
                 Password{" "}
               </label>
               <input onChange={e => dispatch({ type: "passwordImmediately", value: e.target.value })} className="form__input" type="password" id="password" placeholder="Password" autoComplete="off" />
+              <CSSTransition in={state.password.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
+                <div className="alert alert-danger small liveValidateMessage">{state.password.message}</div>
+              </CSSTransition>
             </div>
             <div className="role">
               <label className="form__label" htmlFor="role">
