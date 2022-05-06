@@ -1,5 +1,5 @@
 import React from "react"
-import "../App.css"
+import "./Message.css"
 
 export default function FlashMessages(props) {
   return (
