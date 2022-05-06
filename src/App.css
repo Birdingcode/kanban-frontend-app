@@ -67,7 +67,7 @@ th {
 
 .floating-alert {
   display: none;
-  position: fixed;
+  position: absolute;
   z-index: 9999;
   top: 50px;
   left: 50%;

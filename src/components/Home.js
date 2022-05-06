@@ -1,10 +1,11 @@
-import React, { useContext } from "react"
+import React, { useContext, useState, useEffect } from "react"
 import StateContext from "../StateContext"
 import Page from "./Page"
-import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap"
 import Axios from "axios"
+import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap"
 
 import DispatchContext from "../DispatchContext"
+import { Navigate } from "react-router-dom"
 
 function Home() {
   const appState = useContext(StateContext)
@@ -13,8 +14,9 @@ function Home() {
   function handleLogout() {
     appDispatch({ type: "logout" })
     appDispatch({ type: "flashMessage", value: "You have successfully logged out" })
-    Axios.post("/logout", { withCredentials: true })
+    Axios.get("/logout", { withCredentials: true })
   }
+
   return (
     <Page title="Home">
       <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
@@ -24,9 +26,9 @@ function Home() {
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="me-auto ">
-              <Nav.Link href="/UserManagement">User Management</Nav.Link>
+              {localStorage.getItem("privilege") === "Superadmin" ? <Nav.Link href="/UserManagement">User Management</Nav.Link> : null}
               <NavDropdown title="Dropdown" id="collasible-nav-dropdown">
-                <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
+                <NavDropdown.Item href="/ChangePersonalPw">Change Password</NavDropdown.Item>
                 <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
                 <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
                 <NavDropdown.Divider />
@@ -36,7 +38,7 @@ function Home() {
 
             <Nav className="gap-3">
               <Navbar.Text>
-                Signed in as: <a href="#login">Superadmin</a>
+                Signed in as: <a href="#login">{`${localStorage.getItem("privilege")}`}</a>
               </Navbar.Text>
               <Button onClick={handleLogout} variant="danger">
                 Log Out

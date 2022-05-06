@@ -17,6 +17,11 @@ function CenterGuest(props) {
       console.log(response.data)
       if (response.data) {
         console.log("success")
+
+        localStorage.setItem("kanbanSuccess", response.data.success)
+        localStorage.setItem("privilege", response.data.privilege)
+        localStorage.setItem("username", response.data.username)
+
         appDispatch({ type: "login", data: response.data })
         appDispatch({ type: "flashMessage", value: "You have successfully logged in!" })
       } else {

@@ -4,9 +4,12 @@ import Page from "./Page"
 import DispatchContext from "../DispatchContext"
 import { useImmerReducer } from "use-immer"
 import Axios from "axios"
+import { useNavigate } from "react-router-dom"
+import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap"
 
 function CreateUser() {
   // States htmlFor registration
+  let navigate = useNavigate()
   const appDispatch = useContext(DispatchContext)
 
   const initialState = {
@@ -17,7 +20,7 @@ function CreateUser() {
       isUnique: false,
       checkCount: 0
     },
-    email: {
+    oldEmail: {
       value: "",
       hasErrors: false,
       message: "",
@@ -68,26 +71,26 @@ function CreateUser() {
         }
         return
       case "emailImmediately":
-        draft.email.hasErrors = false
-        draft.email.value = action.value
+        draft.oldEmail.hasErrors = false
+        draft.oldEmail.value = action.value
 
         return
       case "emailAfterDelay":
-        if (!/^\S+@\S+$/.test(draft.email.value)) {
-          draft.email.hasErrors = true
-          draft.email.message = "You must provide a valid email address"
+        if (!/^\S+@\S+$/.test(draft.oldEmail.value)) {
+          draft.oldEmail.hasErrors = true
+          draft.oldEmail.message = "You must provide a valid email address"
         }
-        if (!draft.email.hasErrors && !action.noRequest) {
-          draft.email.checkCount++
+        if (!draft.oldEmail.hasErrors && !action.noRequest) {
+          draft.oldEmail.checkCount++
         }
         return
       case "emailUniqueResults":
         if (action.value) {
-          draft.email.hasErrors = true
-          draft.email.isUnique = false
-          draft.email.message = "Email taken."
+          draft.oldEmail.hasErrors = true
+          draft.oldEmail.isUnique = false
+          draft.oldEmail.message = "Email taken."
         } else {
-          draft.email.isUnique = true
+          draft.oldEmail.isUnique = true
         }
         return
       case "passwordImmediately":
@@ -123,7 +126,7 @@ function CreateUser() {
         }
         return
       case "submitForm":
-        if (!draft.username.hasErrors && draft.username.isUnique && !draft.email.hasErrors && draft.email.isUnique && !draft.password.hasErrors && !draft.privilege.hasErrors) {
+        if (!draft.username.hasErrors && draft.username.isUnique && !draft.oldEmail.hasErrors && draft.oldEmail.isUnique && !draft.password.hasErrors && !draft.privilege.hasErrors) {
           draft.submitCount++
         }
         return
@@ -140,11 +143,11 @@ function CreateUser() {
   }, [state.username.value])
 
   useEffect(() => {
-    if (state.email.value) {
+    if (state.oldEmail.value) {
       const delay = setTimeout(() => dispatch({ type: "emailAfterDelay" }), 800)
       return () => clearTimeout(delay)
     }
-  }, [state.email.value])
+  }, [state.oldEmail.value])
 
   useEffect(() => {
     if (state.password.value) {
@@ -157,7 +160,7 @@ function CreateUser() {
     if (state.username.checkCount) {
       async function fetchResults() {
         try {
-          const response = await Axios.post("/doesUsernameExist", { username: state.username.value })
+          const response = await Axios.post("/doesUsernameExist", { username: state.username.value }, { withCredentials: true })
           dispatch({ type: "usernameUniqueResults", value: response.data })
         } catch (e) {
           console.log("There was a problem or request canceled")
@@ -171,9 +174,10 @@ function CreateUser() {
     if (state.password.checkCount) {
       async function fetchResults() {
         try {
-          const response = await Axios.post("/doesPasswordCondition", { password: state.password.value })
+          const response = await Axios.post("/doesPasswordCondition", { password: state.password.value }, { withCredentials: true })
           dispatch({ type: "passwordChar", value: response.data })
         } catch (e) {
+          console.log(e)
           console.log("There was a problem or request canceled")
         }
       }
@@ -182,10 +186,10 @@ function CreateUser() {
   }, [state.password.checkCount])
 
   useEffect(() => {
-    if (state.email.checkCount) {
+    if (state.oldEmail.checkCount) {
       async function fetchResults() {
         try {
-          const response = await Axios.post("/doesEmailExist", { email: state.email.value })
+          const response = await Axios.post("/doesEmailExist", { oldEmail: state.oldEmail.value }, { withCredentials: true })
           dispatch({ type: "emailUniqueResults", value: response.data })
         } catch (e) {
           console.log("There was a problem or request canceled")
@@ -193,14 +197,15 @@ function CreateUser() {
       }
       fetchResults()
     }
-  }, [state.email.checkCount])
+  }, [state.oldEmail.checkCount])
 
   useEffect(() => {
     if (state.submitCount) {
       async function fetchResults() {
         try {
-          const response = await Axios.post("/register", { username: state.username.value, email: state.email.value, password: state.password.value, privilege: state.privilege.value }, { withCredentials: true })
+          const response = await Axios.post("/register", { username: state.username.value, oldEmail: state.oldEmail.value, password: state.password.value, privilege: state.privilege.value }, { withCredentials: true })
           appDispatch({ type: "login", data: response.data })
+          navigate("/userManagement")
         } catch (e) {
           console.log(e.response)
         }
@@ -214,8 +219,8 @@ function CreateUser() {
     e.preventDefault()
     dispatch({ type: "usernameImmediately", value: state.username.value })
     dispatch({ type: "usernameAfterDelay", value: state.username.value, noRequest: true })
-    dispatch({ type: "emailImmediately", value: state.email.value })
-    dispatch({ type: "emailAfterDelay", value: state.email.value, noRequest: true })
+    dispatch({ type: "emailImmediately", value: state.oldEmail.value })
+    dispatch({ type: "emailAfterDelay", value: state.oldEmail.value, noRequest: true })
     dispatch({ type: "passwordImmediately", value: state.password.value })
     dispatch({ type: "passwordAfterDelay", value: state.password.value, noRequest: true })
     dispatch({ type: "privilegeImmediately", value: state.privilege.value })
@@ -224,6 +229,11 @@ function CreateUser() {
 
   return (
     <Page title="Creating New User">
+      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+        <Container>
+          <Navbar.Brand href="/">Kanban App</Navbar.Brand>
+        </Container>
+      </Navbar>
       <form onSubmit={handleSubmit}>
         <div className="form">
           <div className="form-body">

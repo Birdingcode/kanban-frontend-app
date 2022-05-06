@@ -4,8 +4,11 @@ import DispatchContext from "../DispatchContext"
 import { useImmerReducer } from "use-immer"
 import Axios from "axios"
 import { CSSTransition } from "react-transition-group"
+import { useNavigate } from "react-router-dom"
+import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap"
 
 function ChangeEmail() {
+  let navigate = useNavigate()
   const appDispatch = useContext(DispatchContext)
   const nodeRef = React.useRef(null)
   const initialState = {
@@ -117,7 +120,7 @@ function ChangeEmail() {
     if (state.oldEmail.checkCount) {
       async function fetchResults() {
         try {
-          const response = await Axios.post("/doesEmailExist", { oldEmail: state.oldEmail.value })
+          const response = await Axios.post("/doesEmailExist", { oldEmail: state.oldEmail.value }, { withCredentials: true })
           dispatch({ type: "emailUniqueResults", value: response.data })
         } catch (e) {
           console.log("There was a problem or request canceled")
@@ -131,7 +134,7 @@ function ChangeEmail() {
     if (state.newEmail.checkCount) {
       async function fetchResults() {
         try {
-          const response = await Axios.post("/doesNewEmailExist", { newEmail: state.newEmail.value })
+          const response = await Axios.post("/doesNewEmailExist", { newEmail: state.newEmail.value }, { withCredentials: true })
           dispatch({ type: "newEmailUniqueResults", value: response.data })
         } catch (e) {
           console.log("There was a problem or request canceled")
@@ -147,6 +150,7 @@ function ChangeEmail() {
         try {
           const response = await Axios.post("/changeEmail", { oldEmail: state.oldEmail.value, newEmail: state.newEmail.value, cfmEmail: state.cfmEmail.value }, { withCredentials: true })
           appDispatch({ type: "login", data: response.data })
+          navigate("/userManagement")
         } catch (e) {
           console.log(e.response)
         }
@@ -167,6 +171,11 @@ function ChangeEmail() {
 
   return (
     <Page title="Change Email">
+      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+        <Container>
+          <Navbar.Brand href="/">Kanban App</Navbar.Brand>
+        </Container>
+      </Navbar>
       <form onSubmit={handleSubmit}>
         <div className="form">
           <div className="form-body">

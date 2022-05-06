@@ -4,9 +4,9 @@ import { Link } from "react-router-dom"
 import Axios from "axios"
 import { Table } from "react-bootstrap"
 import Page from "./Page"
+import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap"
 
 function UserManagement() {
-  console.log("rendering")
   const [state, setState] = useImmer([])
   useEffect(() => {
     //const ourRequest = Axios.CancelToken.source()
@@ -44,6 +44,11 @@ function UserManagement() {
 
   return (
     <Page title="User Management">
+      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+        <Container>
+          <Navbar.Brand href="/">Kanban App</Navbar.Brand>
+        </Container>
+      </Navbar>
       <div style={{ display: "flex" }}>
         <Link to={"/userManagement/createUser"} className="nav-item nav-link">
           <button>Create New User</button>

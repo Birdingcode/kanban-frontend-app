@@ -20,13 +20,16 @@ import UserManagement from "./components/UserManagement"
 import CreateUser from "./components/CreateUser"
 import ChangePassword from "./components/ChangePassword"
 import ChangeEmail from "./components/ChangeEmail"
+import ChangePersonalPw from "./components/ChangePersonalPw"
 
 export default function App() {
   const initialState = {
     loggedIn: Boolean(localStorage.getItem("kanbanSuccess")),
     flashMessages: [],
     user: {
-      state: localStorage.getItem("kanbanSuccess")
+      state: localStorage.getItem("kanbanSuccess"),
+      privilege: localStorage.getItem("privilege"),
+      username: localStorage.getItem("username")
     }
   }
 
@@ -46,10 +49,10 @@ export default function App() {
   const [state, dispatch] = useImmerReducer(ourReducer, initialState)
 
   useEffect(() => {
-    if (state.loggedIn) {
-      localStorage.setItem("kanbanSuccess", state.user.success)
-    } else {
+    if (!state.loggedIn) {
       localStorage.removeItem("kanbanSuccess")
+      localStorage.removeItem("privilege")
+      localStorage.removeItem("username")
     }
   }, [state.loggedIn])
 
@@ -60,11 +63,12 @@ export default function App() {
           <FlashMessages messages={state.flashMessages} />
 
           <Routes>
-            <Route path="/" element={state.loggedIn ? <Home /> : <CenterGuest />} />
+            <Route exact path="/" element={state.loggedIn ? <Home /> : <CenterGuest />} />
+            <Route path="/changePersonalPw" element={state.loggedIn ? <ChangePersonalPw /> : <CenterGuest />} />
             <Route path="/userManagement/" element={state.loggedIn ? <UserManagement /> : <CenterGuest />} />
-            <Route path="/userManagement/createUser" element={<CreateUser />} />
-            <Route path="/userManagement/changePassword" element={<ChangePassword />} />
-            <Route path="/userManagement/changeEmail" element={<ChangeEmail />} />
+            <Route path="/userManagement/createUser" element={state.loggedIn ? <CreateUser /> : <CenterGuest />} />
+            <Route path="/userManagement/changePassword" element={state.loggedIn ? <ChangePassword /> : <CenterGuest />} />
+            <Route path="/userManagement/changeEmail" element={state.loggedIn ? <ChangeEmail /> : <CenterGuest />} />
           </Routes>
         </BrowserRouter>
       </DispatchContext.Provider>
