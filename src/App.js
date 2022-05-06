@@ -61,7 +61,7 @@ export default function App() {
 
           <Routes>
             <Route path="/" element={state.loggedIn ? <Home /> : <CenterGuest />} />
-            <Route path="/userManagement/" element={<UserManagement />} />
+            <Route path="/userManagement/" element={state.loggedIn ? <UserManagement /> : <CenterGuest />} />
             <Route path="/userManagement/createUser" element={<CreateUser />} />
             <Route path="/userManagement/changePassword" element={<ChangePassword />} />
             <Route path="/userManagement/changeEmail" element={<ChangeEmail />} />

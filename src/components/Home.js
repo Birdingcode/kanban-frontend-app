@@ -2,6 +2,7 @@ import React, { useContext } from "react"
 import StateContext from "../StateContext"
 import Page from "./Page"
 import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap"
+import Axios from "axios"
 
 import DispatchContext from "../DispatchContext"
 
@@ -12,6 +13,7 @@ function Home() {
   function handleLogout() {
     appDispatch({ type: "logout" })
     appDispatch({ type: "flashMessage", value: "You have successfully logged out" })
+    Axios.post("/logout", { withCredentials: true })
   }
   return (
     <Page title="Home">

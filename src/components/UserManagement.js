@@ -5,9 +5,6 @@ import Axios from "axios"
 import { Table } from "react-bootstrap"
 import Page from "./Page"
 
-import CreateUser from "./CreateUser"
-import axios from "axios"
-
 function UserManagement() {
   console.log("rendering")
   const [state, setState] = useImmer([])
@@ -64,7 +61,7 @@ function UserManagement() {
             <th>User ID</th>
             <th>Username</th>
             <th>Email</th>
-            <th>Role</th>
+            <th>Privilege</th>
             <th>Status</th>
             <th>Change Status</th>
           </tr>
@@ -75,7 +72,7 @@ function UserManagement() {
               <td>{item.userID}</td>
               <td>{item.username}</td>
               <td>{item.email}</td>
-              <td>{item.role}</td>
+              <td>{item.privilege}</td>
               <td>{item.status ? "True" : "False"}</td>
               <td>
                 <button onClick={e => changeStatus(e, item.userID)}>Click</button>

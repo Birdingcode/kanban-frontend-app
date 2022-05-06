@@ -30,7 +30,7 @@ function CreateUser() {
       message: "",
       checkCount: 0
     },
-    role: {
+    privilege: {
       value: "",
       hasErrors: false,
       message: ""
@@ -114,16 +114,16 @@ function CreateUser() {
         } else {
         }
         return
-      case "roleHave":
-        draft.role.value = action.value
-        draft.role.hasErrors = false
-        if ((draft.role.length = 0)) {
-          draft.role.hasErrors = true
-          draft.role.message = "Please include a role"
+      case "privilegeHave":
+        draft.privilege.value = action.value
+        draft.privilege.hasErrors = false
+        if ((draft.privilege.length = 0)) {
+          draft.privilege.hasErrors = true
+          draft.privilege.message = "Please include a privilege"
         }
         return
       case "submitForm":
-        if (!draft.username.hasErrors && draft.username.isUnique && !draft.email.hasErrors && draft.email.isUnique && !draft.password.hasErrors && !draft.role.hasErrors) {
+        if (!draft.username.hasErrors && draft.username.isUnique && !draft.email.hasErrors && draft.email.isUnique && !draft.password.hasErrors && !draft.privilege.hasErrors) {
           draft.submitCount++
         }
         return
@@ -199,7 +199,7 @@ function CreateUser() {
     if (state.submitCount) {
       async function fetchResults() {
         try {
-          const response = await Axios.post("/register", { username: state.username.value, email: state.email.value, password: state.password.value, role: state.role.value }, { withCredentials: true })
+          const response = await Axios.post("/register", { username: state.username.value, email: state.email.value, password: state.password.value, privilege: state.privilege.value }, { withCredentials: true })
           appDispatch({ type: "login", data: response.data })
         } catch (e) {
           console.log(e.response)
@@ -218,7 +218,7 @@ function CreateUser() {
     dispatch({ type: "emailAfterDelay", value: state.email.value, noRequest: true })
     dispatch({ type: "passwordImmediately", value: state.password.value })
     dispatch({ type: "passwordAfterDelay", value: state.password.value, noRequest: true })
-    dispatch({ type: "roleImmediately", value: state.role.value })
+    dispatch({ type: "privilegeImmediately", value: state.privilege.value })
     dispatch({ type: "submitForm" })
   }
 
@@ -232,9 +232,6 @@ function CreateUser() {
                 Username{" "}
               </label>
               <input onChange={e => dispatch({ type: "usernameImmediately", value: e.target.value })} className="form__input" type="text" id="firstName" placeholder="Username" autoComplete="off" />
-              <CSSTransition in={state.username.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
-                <div className="alert alert-danger small liveValidateMessage">{state.username.message}</div>
-              </CSSTransition>
             </div>
 
             <div className="email">
@@ -248,15 +245,12 @@ function CreateUser() {
                 Password{" "}
               </label>
               <input onChange={e => dispatch({ type: "passwordImmediately", value: e.target.value })} className="form__input" type="password" id="password" placeholder="Password" autoComplete="off" />
-              <CSSTransition in={state.password.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
-                <div className="alert alert-danger small liveValidateMessage">{state.password.message}</div>
-              </CSSTransition>
             </div>
-            <div className="role">
-              <label className="form__label" htmlFor="role">
-                Role{" "}
+            <div className="privilege">
+              <label className="form__label" htmlFor="privilege">
+                privilege{" "}
               </label>
-              <input onChange={e => dispatch({ type: "roleHave", value: e.target.value })} className="form__input" type="role" id="role" placeholder="Role" autoComplete="off" />
+              <input onChange={e => dispatch({ type: "privilegeHave", value: e.target.value })} className="form__input" type="privilege" id="privilege" placeholder="privilege" autoComplete="off" />
             </div>
           </div>
           <div className="footer">
