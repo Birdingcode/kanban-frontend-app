@@ -4,21 +4,22 @@ import DispatchContext from "../DispatchContext"
 import { useImmerReducer } from "use-immer"
 import Axios from "axios"
 import { CSSTransition } from "react-transition-group"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap"
 
 function ChangeEmail() {
   let navigate = useNavigate()
+  const location = useLocation()
   const appDispatch = useContext(DispatchContext)
   const nodeRef = React.useRef(null)
   const initialState = {
-    oldEmail: {
-      value: "",
-      hasErrors: false,
-      message: "",
-      isUnique: false,
-      checkCount: 0
-    },
+    // oldEmail: {
+    //   value: "",
+    //   hasErrors: false,
+    //   message: "",
+    //   isUnique: false,
+    //   checkCount: 0
+    // },
     newEmail: {
       value: "",
       hasErrors: false,
@@ -37,29 +38,29 @@ function ChangeEmail() {
 
   function ourReducer(draft, action) {
     switch (action.type) {
-      case "emailImmediately":
-        draft.oldEmail.hasErrors = false
-        draft.oldEmail.value = action.value
-        return
-      case "emailAfterDelay":
-        if (!/^\S+@\S+$/.test(draft.oldEmail.value)) {
-          draft.oldEmail.hasErrors = true
-          draft.oldEmail.message = "You must provide a valid email address"
-        }
-        if (!draft.oldEmail.hasErrors && !action.noRequest) {
-          draft.oldEmail.checkCount++
-        }
-        return
-      case "emailUniqueResults":
-        if (action.value == true) {
-          draft.oldEmail.hasErrors = false
-          draft.oldEmail.isUnique = false
-        } else {
-          draft.oldEmail.isUnique = true
-          draft.oldEmail.hasErrors = true
-          draft.oldEmail.message = "Email not found in database."
-        }
-        return
+      // case "emailImmediately":
+      //   draft.oldEmail.hasErrors = false
+      //   draft.oldEmail.value = action.value
+      //   return
+      // case "emailAfterDelay":
+      //   if (!/^\S+@\S+$/.test(draft.oldEmail.value)) {
+      //     draft.oldEmail.hasErrors = true
+      //     draft.oldEmail.message = "You must provide a valid email address"
+      //   }
+      //   if (!draft.oldEmail.hasErrors && !action.noRequest) {
+      //     draft.oldEmail.checkCount++
+      //   }
+      //   return
+      // case "emailUniqueResults":
+      //   if (action.value == true) {
+      //     draft.oldEmail.hasErrors = false
+      //     draft.oldEmail.isUnique = false
+      //   } else {
+      //     draft.oldEmail.isUnique = true
+      //     draft.oldEmail.hasErrors = true
+      //     draft.oldEmail.message = "Email not found in database."
+      //   }
+      //   return
       case "newEmailImmediately":
         draft.newEmail.hasErrors = false
         draft.newEmail.value = action.value
@@ -93,7 +94,7 @@ function ChangeEmail() {
         }
         return
       case "submitForm":
-        if (!draft.oldEmail.hasErrors && !draft.oldEmail.isUnique && !draft.newEmail.hasErrors && draft.newEmail.isUnique && !draft.cfmEmail.hasErrors) {
+        if (!draft.newEmail.hasErrors && draft.newEmail.isUnique && !draft.cfmEmail.hasErrors) {
           draft.submitCount++
         }
         return
@@ -109,26 +110,42 @@ function ChangeEmail() {
     }
   }, [state.newEmail.value])
 
-  useEffect(() => {
-    if (state.oldEmail.value) {
-      const delay = setTimeout(() => dispatch({ type: "emailAfterDelay" }), 800)
-      return () => clearTimeout(delay)
-    }
-  }, [state.oldEmail.value])
+  // useEffect(() => {
+  //   if (state.oldEmail.value) {
+  //     const delay = setTimeout(() => dispatch({ type: "emailAfterDelay" }), 800)
+  //     return () => clearTimeout(delay)
+  //   }
+  // }, [state.oldEmail.value])
 
   useEffect(() => {
-    if (state.oldEmail.checkCount) {
-      async function fetchResults() {
-        try {
-          const response = await Axios.post("/doesEmailExist", { oldEmail: state.oldEmail.value }, { withCredentials: true })
-          dispatch({ type: "emailUniqueResults", value: response.data })
-        } catch (e) {
-          console.log("There was a problem or request canceled")
+    async function checkGroup() {
+      try {
+        const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username") }, { withCredentials: true })
+        console.log(response.data)
+        if (response.data !== true) {
+          navigate("/")
         }
+        //setState(response.data)
+      } catch (e) {
+        console.log(e)
       }
-      fetchResults()
     }
-  }, [state.oldEmail.checkCount])
+    checkGroup()
+  }, [])
+
+  // useEffect(() => {
+  //   if (state.oldEmail.checkCount) {
+  //     async function fetchResults() {
+  //       try {
+  //         const response = await Axios.post("/doesEmailExist", { oldEmail: state.oldEmail.value }, { withCredentials: true })
+  //         dispatch({ type: "emailUniqueResults", value: response.data })
+  //       } catch (e) {
+  //         console.log("There was a problem or request canceled")
+  //       }
+  //     }
+  //     fetchResults()
+  //   }
+  // }, [state.oldEmail.checkCount])
 
   useEffect(() => {
     if (state.newEmail.checkCount) {
@@ -148,7 +165,7 @@ function ChangeEmail() {
     if (state.submitCount) {
       async function fetchResults() {
         try {
-          const response = await Axios.post("/changeEmail", { oldEmail: state.oldEmail.value, newEmail: state.newEmail.value, cfmEmail: state.cfmEmail.value }, { withCredentials: true })
+          const response = await Axios.post("/changeEmail", { oldEmail: location.state.oldEmail, newEmail: state.newEmail.value, cfmEmail: state.cfmEmail.value }, { withCredentials: true })
           appDispatch({ type: "login", data: response.data })
           navigate("/userManagement")
         } catch (e) {
@@ -162,8 +179,8 @@ function ChangeEmail() {
 
   function handleSubmit(e) {
     e.preventDefault()
-    dispatch({ type: "emailImmediately", value: state.oldEmail.value })
-    dispatch({ type: "emailAfterDelay", value: state.oldEmail.value, noRequest: true })
+    //dispatch({ type: "emailImmediately", value: state.oldEmail.value })
+    //dispatch({ type: "emailAfterDelay", value: state.oldEmail.value, noRequest: true })
     dispatch({ type: "newEmailImmediately", value: state.newEmail.value })
     dispatch({ type: "newEmailAfterDelay", value: state.newEmail.value, noRequest: true })
     dispatch({ type: "submitForm" })
@@ -183,10 +200,7 @@ function ChangeEmail() {
               <label className="form__label" htmlFor="oldEmail">
                 Old Email{" "}
               </label>
-              <input onChange={e => dispatch({ type: "emailImmediately", value: e.target.value })} type="oldEmail" id="oldEmail" className="form__input" placeholder="Old Email" autoComplete="off" />
-              <CSSTransition nodeRef={nodeRef} in={state.oldEmail.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
-                <div className="alert alert-danger small liveValidateMessage">{state.oldEmail.message}</div>
-              </CSSTransition>
+              <input value={location.state.oldEmail} type="oldEmail" id="oldEmail" className="form__input" placeholder="Old Email" autoComplete="off" readOnly />
             </div>
             <div className="newEmail">
               <label className="form__label" htmlFor="newEmail">

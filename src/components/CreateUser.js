@@ -6,10 +6,12 @@ import { useImmerReducer } from "use-immer"
 import Axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap"
+import { CSSTransition } from "react-transition-group"
 
 function CreateUser() {
   // States htmlFor registration
   let navigate = useNavigate()
+  const nodeRef = React.useRef(null)
   const appDispatch = useContext(DispatchContext)
 
   const initialState = {
@@ -111,7 +113,7 @@ function CreateUser() {
         }
         return
       case "passwordChar":
-        if (action.value) {
+        if (action.value == false) {
           draft.password.hasErrors = true
           draft.password.message = "Password must contain alphabets, numbers and special Characters"
         } else {
@@ -155,6 +157,22 @@ function CreateUser() {
       return () => clearTimeout(delay)
     }
   }, [state.password.value])
+
+  useEffect(() => {
+    async function checkGroup() {
+      try {
+        const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username") }, { withCredentials: true })
+        console.log(response.data)
+        if (response.data !== true) {
+          navigate("/")
+        }
+        //setState(response.data)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    checkGroup()
+  }, [])
 
   useEffect(() => {
     if (state.username.checkCount) {
@@ -242,6 +260,9 @@ function CreateUser() {
                 Username{" "}
               </label>
               <input onChange={e => dispatch({ type: "usernameImmediately", value: e.target.value })} className="form__input" type="text" id="firstName" placeholder="Username" autoComplete="off" />
+              <CSSTransition nodeRef={nodeRef} in={state.username.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
+                <div className="alert alert-danger small liveValidateMessage">{state.username.message}</div>
+              </CSSTransition>
             </div>
 
             <div className="email">
@@ -249,18 +270,24 @@ function CreateUser() {
                 Email{" "}
               </label>
               <input onChange={e => dispatch({ type: "emailImmediately", value: e.target.value })} type="email" id="email" className="form__input" placeholder="Email" autoComplete="off" />
+              <CSSTransition nodeRef={nodeRef} in={state.oldEmail.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
+                <div className="alert alert-danger small liveValidateMessage">{state.oldEmail.message}</div>
+              </CSSTransition>
             </div>
             <div className="password">
               <label className="form__label" htmlFor="password">
                 Password{" "}
               </label>
               <input onChange={e => dispatch({ type: "passwordImmediately", value: e.target.value })} className="form__input" type="password" id="password" placeholder="Password" autoComplete="off" />
+              <CSSTransition nodeRef={nodeRef} in={state.password.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
+                <div className="alert alert-danger small liveValidateMessage">{state.password.message}</div>
+              </CSSTransition>
             </div>
             <div className="privilege">
               <label className="form__label" htmlFor="privilege">
-                privilege{" "}
+                Group(Privilege){" "}
               </label>
-              <input onChange={e => dispatch({ type: "privilegeHave", value: e.target.value })} className="form__input" type="privilege" id="privilege" placeholder="privilege" autoComplete="off" />
+              <input onChange={e => dispatch({ type: "privilegeHave", value: e.target.value })} className="form__input" type="privilege" id="privilege" placeholder="Group(Privilege)" autoComplete="off" />
             </div>
           </div>
           <div className="footer">

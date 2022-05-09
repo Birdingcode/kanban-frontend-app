@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react"
 import StateContext from "../StateContext"
+import { useImmer } from "use-immer"
 import Page from "./Page"
 import Axios from "axios"
 import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap"
@@ -8,8 +9,25 @@ import DispatchContext from "../DispatchContext"
 import { Navigate } from "react-router-dom"
 
 function Home() {
-  const appState = useContext(StateContext)
+  //const appState = useContext(StateContext)
   const appDispatch = useContext(DispatchContext)
+  const [groupAuth, setGroupAuth] = useState()
+
+  useEffect(() => {
+    async function checkGroup() {
+      try {
+        const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username") }, { withCredentials: true })
+        console.log(response.data)
+        if (response.data) {
+          setGroupAuth(response.data)
+        }
+        //setState(response.data)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    checkGroup()
+  }, [])
 
   function handleLogout() {
     appDispatch({ type: "logout" })
@@ -26,7 +44,7 @@ function Home() {
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="me-auto ">
-              {localStorage.getItem("privilege") === "Superadmin" ? <Nav.Link href="/UserManagement">User Management</Nav.Link> : null}
+              {groupAuth === true ? <Nav.Link href="/UserManagement">User Management</Nav.Link> : null}
               <NavDropdown title="Dropdown" id="collasible-nav-dropdown">
                 <NavDropdown.Item href="/ChangePersonalPw">Change Password</NavDropdown.Item>
                 <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
@@ -38,7 +56,7 @@ function Home() {
 
             <Nav className="gap-3">
               <Navbar.Text>
-                Signed in as: <a href="#login">{`${localStorage.getItem("privilege")}`}</a>
+                Signed in as: <a href="#login">{`${localStorage.getItem("username")}`}</a>
               </Navbar.Text>
               <Button onClick={handleLogout} variant="danger">
                 Log Out

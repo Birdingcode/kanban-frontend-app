@@ -19,7 +19,6 @@ function CenterGuest(props) {
         console.log("success")
 
         localStorage.setItem("kanbanSuccess", response.data.success)
-        localStorage.setItem("privilege", response.data.privilege)
         localStorage.setItem("username", response.data.username)
 
         appDispatch({ type: "login", data: response.data })
@@ -29,6 +28,7 @@ function CenterGuest(props) {
         appDispatch({ type: "flashMessage", value: "Invalid Username / Password." })
       }
     } catch (e) {
+      appDispatch({ type: "flashMessage", value: "Invalid Username / Password." })
       console.log("There was a problem.")
     }
   }

@@ -28,7 +28,6 @@ export default function App() {
     flashMessages: [],
     user: {
       state: localStorage.getItem("kanbanSuccess"),
-      privilege: localStorage.getItem("privilege"),
       username: localStorage.getItem("username")
     }
   }
@@ -51,7 +50,6 @@ export default function App() {
   useEffect(() => {
     if (!state.loggedIn) {
       localStorage.removeItem("kanbanSuccess")
-      localStorage.removeItem("privilege")
       localStorage.removeItem("username")
     }
   }, [state.loggedIn])
