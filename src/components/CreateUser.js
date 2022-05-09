@@ -287,7 +287,10 @@ function CreateUser() {
               <label className="form__label" htmlFor="privilege">
                 Group(Privilege){" "}
               </label>
-              <input onChange={e => dispatch({ type: "privilegeHave", value: e.target.value })} className="form__input" type="privilege" id="privilege" placeholder="Group(Privilege)" autoComplete="off" />
+              <select onChange={e => dispatch({ type: "privilegeHave", value: e.target.value })}>
+                <option value="Superadmin">Superadmin</option>
+                <option value="User">User</option>
+              </select>
             </div>
           </div>
           <div className="footer">

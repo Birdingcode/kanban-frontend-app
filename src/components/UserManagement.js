@@ -96,7 +96,7 @@ function UserManagement() {
         </Link>
       </div>
       <Table striped bordered hover variant="dark">
-        <thead>
+        <thead style={{ textAlign: "center" }}>
           <tr>
             <th>User ID</th>
             <th>Username</th>
@@ -108,14 +108,14 @@ function UserManagement() {
             <th>Change Password</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody style={{ textAlign: "center" }}>
           {state.map((item, i) => (
             <tr key={item.userID}>
               <td>{item.userID}</td>
               <td>{item.username}</td>
               <td>{item.email}</td>
               <td>{item.privilege}</td>
-              <td>{item.status ? "True" : "False"}</td>
+              <td style={{ color: item.status === true ? "green" : "red" }}>{item.status ? "True" : "False"}</td>
               <td>
                 <button onClick={e => changeStatus(e, item.userID)}>Click</button>
               </td>
