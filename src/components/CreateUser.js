@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react"
-import "../Form.css"
 import Page from "./Page"
 import DispatchContext from "../DispatchContext"
 import { useImmerReducer } from "use-immer"
@@ -35,7 +34,7 @@ function CreateUser() {
       message: "",
       checkCount: 0
     },
-    privilege: {
+    role: {
       value: "",
       hasErrors: false,
       message: ""
@@ -119,16 +118,16 @@ function CreateUser() {
         } else {
         }
         return
-      case "privilegeHave":
-        draft.privilege.value = action.value
-        draft.privilege.hasErrors = false
-        if ((draft.privilege.length = 0)) {
-          draft.privilege.hasErrors = true
-          draft.privilege.message = "Please include a privilege"
+      case "roleHave":
+        draft.role.value = action.value
+        draft.role.hasErrors = false
+        if ((draft.role.length = 0)) {
+          draft.role.hasErrors = true
+          draft.role.message = "Please include a role"
         }
         return
       case "submitForm":
-        if (!draft.username.hasErrors && draft.username.isUnique && !draft.oldEmail.hasErrors && draft.oldEmail.isUnique && !draft.password.hasErrors && !draft.privilege.hasErrors) {
+        if (!draft.username.hasErrors && draft.username.isUnique && !draft.oldEmail.hasErrors && draft.oldEmail.isUnique && !draft.password.hasErrors && !draft.role.hasErrors) {
           draft.submitCount++
         }
         return
@@ -221,7 +220,7 @@ function CreateUser() {
     if (state.submitCount) {
       async function fetchResults() {
         try {
-          const response = await Axios.post("/register", { username: state.username.value, oldEmail: state.oldEmail.value, password: state.password.value, privilege: state.privilege.value }, { withCredentials: true })
+          const response = await Axios.post("/register", { username: state.username.value, oldEmail: state.oldEmail.value, password: state.password.value, role: state.role.value }, { withCredentials: true })
           appDispatch({ type: "login", data: response.data })
           navigate("/userManagement")
         } catch (e) {
@@ -241,7 +240,7 @@ function CreateUser() {
     dispatch({ type: "emailAfterDelay", value: state.oldEmail.value, noRequest: true })
     dispatch({ type: "passwordImmediately", value: state.password.value })
     dispatch({ type: "passwordAfterDelay", value: state.password.value, noRequest: true })
-    dispatch({ type: "privilegeImmediately", value: state.privilege.value })
+    dispatch({ type: "roleImmediately", value: state.role.value })
     dispatch({ type: "submitForm" })
   }
 
@@ -283,13 +282,15 @@ function CreateUser() {
                 <div className="alert alert-danger small liveValidateMessage">{state.password.message}</div>
               </CSSTransition>
             </div>
-            <div className="privilege">
-              <label className="form__label" htmlFor="privilege">
-                Group(Privilege){" "}
+            <div className="role">
+              <label className="form__label" htmlFor="role">
+                Group{" "}
               </label>
-              <select onChange={e => dispatch({ type: "privilegeHave", value: e.target.value })}>
+              <select onChange={e => dispatch({ type: "roleHave", value: e.target.value })}>
                 <option value="Superadmin">Superadmin</option>
-                <option value="User">User</option>
+                <option value="Member">Member</option>
+                <option value="Lead">Lead</option>
+                <option value="PM">PM</option>
               </select>
             </div>
           </div>

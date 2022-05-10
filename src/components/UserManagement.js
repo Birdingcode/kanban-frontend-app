@@ -44,11 +44,11 @@ function UserManagement() {
     // }
   }, [])
 
-  const changeStatus = async (e, userID) => {
+  const changeStatus = async (e, username) => {
     e.preventDefault()
     try {
-      console.log(userID)
-      const response = await Axios.post("/changeStatus", { userID: userID }, { withCredentials: true })
+      console.log(username)
+      const response = await Axios.post("/changeStatus", { username: username }, { withCredentials: true })
       console.log(response.data)
       if (response.data) {
         setState(response.data)
@@ -98,10 +98,9 @@ function UserManagement() {
       <Table striped bordered hover variant="dark">
         <thead style={{ textAlign: "center" }}>
           <tr>
-            <th>User ID</th>
             <th>Username</th>
             <th>Email</th>
-            <th>Group(Privilege)</th>
+            <th>Group(Role)</th>
             <th>Status</th>
             <th>Change Status</th>
             <th>Change Email</th>
@@ -110,14 +109,13 @@ function UserManagement() {
         </thead>
         <tbody style={{ textAlign: "center" }}>
           {state.map((item, i) => (
-            <tr key={item.userID}>
-              <td>{item.userID}</td>
+            <tr key={item.username}>
               <td>{item.username}</td>
               <td>{item.email}</td>
-              <td>{item.privilege}</td>
+              <td>{item.role}</td>
               <td style={{ color: item.status === true ? "green" : "red" }}>{item.status ? "True" : "False"}</td>
               <td>
-                <button onClick={e => changeStatus(e, item.userID)}>Click</button>
+                <button onClick={e => changeStatus(e, item.username)}>Click</button>
               </td>
               <td>
                 <button onClick={e => changeEmail(e, item.email)}>Click</button>

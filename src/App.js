@@ -21,6 +21,7 @@ import CreateUser from "./components/CreateUser"
 import ChangePassword from "./components/ChangePassword"
 import ChangeEmail from "./components/ChangeEmail"
 import ChangePersonalPw from "./components/ChangePersonalPw"
+import CreateApp from "./components/CreateApp"
 
 export default function App() {
   const initialState = {
@@ -67,6 +68,7 @@ export default function App() {
             <Route path="/userManagement/createUser" element={state.loggedIn ? <CreateUser /> : <CenterGuest />} />
             <Route path="/userManagement/changePassword" element={state.loggedIn ? <ChangePassword /> : <CenterGuest />} />
             <Route path="/userManagement/changeEmail" element={state.loggedIn ? <ChangeEmail /> : <CenterGuest />} />
+            <Route path="/createApp" element={state.loggedIn ? <CreateApp /> : <CenterGuest />} />
           </Routes>
         </BrowserRouter>
       </DispatchContext.Provider>
