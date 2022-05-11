@@ -188,11 +188,6 @@ function ChangeEmail() {
 
   return (
     <Page title="Change Email">
-      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-        <Container>
-          <Navbar.Brand href="/">Kanban App</Navbar.Brand>
-        </Container>
-      </Navbar>
       <form onSubmit={handleSubmit}>
         <div className="form">
           <div className="form-body">

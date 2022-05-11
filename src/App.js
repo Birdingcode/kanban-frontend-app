@@ -1,5 +1,4 @@
 import React, { useState, useReducer, useEffect, Suspense } from "react"
-import ReactDOM from "react-dom/client"
 import { useImmerReducer } from "use-immer"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { CSSTransition } from "react-transition-group"
@@ -22,6 +21,11 @@ import ChangePassword from "./components/ChangePassword"
 import ChangeEmail from "./components/ChangeEmail"
 import ChangePersonalPw from "./components/ChangePersonalPw"
 import CreateApp from "./components/CreateApp"
+import CreatePlan from "./components/CreatePlan"
+import CreateTask from "./components/CreateTask"
+import NotFound from "./components/NotFound"
+import KBoard from "./components/KBoard"
+import NavBar from "./components/NavBar"
 
 export default function App() {
   const initialState = {
@@ -60,7 +64,7 @@ export default function App() {
       <DispatchContext.Provider value={dispatch}>
         <BrowserRouter>
           <FlashMessages messages={state.flashMessages} />
-
+          {state.loggedIn ? <NavBar /> : null}
           <Routes>
             <Route exact path="/" element={state.loggedIn ? <Home /> : <CenterGuest />} />
             <Route path="/changePersonalPw" element={state.loggedIn ? <ChangePersonalPw /> : <CenterGuest />} />
@@ -69,6 +73,10 @@ export default function App() {
             <Route path="/userManagement/changePassword" element={state.loggedIn ? <ChangePassword /> : <CenterGuest />} />
             <Route path="/userManagement/changeEmail" element={state.loggedIn ? <ChangeEmail /> : <CenterGuest />} />
             <Route path="/createApp" element={state.loggedIn ? <CreateApp /> : <CenterGuest />} />
+            <Route path="/createPlan" element={state.loggedIn ? <CreatePlan /> : <CenterGuest />} />
+            <Route path="/project/:App_Acronym" element={state.loggedIn ? <KBoard /> : <CenterGuest />} />
+            <Route path="/createTask" element={state.loggedIn ? <CreateTask /> : <CenterGuest />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </DispatchContext.Provider>
