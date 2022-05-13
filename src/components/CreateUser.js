@@ -1,17 +1,50 @@
 import React, { useState, useEffect, useContext } from "react"
 import Page from "./Page"
 import DispatchContext from "../DispatchContext"
-import { useImmerReducer } from "use-immer"
+import { useImmerReducer, useImmer } from "use-immer"
 import Axios from "axios"
 import { useNavigate } from "react-router-dom"
-import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap"
 import { CSSTransition } from "react-transition-group"
 
+//MUI
+import OutlinedInput from "@mui/material/OutlinedInput"
+import InputLabel from "@mui/material/InputLabel"
+import MenuItem from "@mui/material/MenuItem"
+import FormControl from "@mui/material/FormControl"
+import ListItemText from "@mui/material/ListItemText"
+import Select from "@mui/material/Select"
+import Checkbox from "@mui/material/Checkbox"
+const ITEM_HEIGHT = 48
+const ITEM_PADDING_TOP = 8
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250
+    }
+  }
+}
+const groups = ["Superadmin", "PM", "Lead", "Member"]
+
 function CreateUser() {
-  // States htmlFor registration
+  const [app, setApp] = useImmer([])
   let navigate = useNavigate()
   const nodeRef = React.useRef(null)
   const appDispatch = useContext(DispatchContext)
+  const [networkStatus, setNetworkStatus] = useState("pending")
+
+  //mui
+  const [personGroup, setPersonGroup] = useState([])
+  const [aValue, setAValue] = useState("")
+  const handleChange = event => {
+    const {
+      target: { value }
+    } = event
+    setPersonGroup(
+      // On autofill we get a stringified value.
+      typeof value === "string" ? value.split(",") : value
+    )
+  }
 
   const initialState = {
     username: {
@@ -29,6 +62,12 @@ function CreateUser() {
       checkCount: 0
     },
     password: {
+      value: "",
+      hasErrors: false,
+      message: "",
+      checkCount: 0
+    },
+    App_Acronym: {
       value: "",
       hasErrors: false,
       message: "",
@@ -118,16 +157,27 @@ function CreateUser() {
         } else {
         }
         return
-      case "roleHave":
-        draft.role.value = action.value
-        draft.role.hasErrors = false
-        if ((draft.role.length = 0)) {
-          draft.role.hasErrors = true
-          draft.role.message = "Please include a role"
+      case "acronymImmediately":
+        draft.App_Acronym.hasErrors = false
+        draft.App_Acronym.value = action.value
+        if (draft.App_Acronym.value.length < 3) {
+          draft.App_Acronym.hasErrors = true
+          draft.App_Acronym.message = "Acronym must be 3 characters"
+        }
+        if (!draft.App_Acronym.hasErrors) {
+          draft.App_Acronym.checkCount++
         }
         return
+        // case "roleHave":
+        //   draft.role.value = action.value
+        //   draft.role.hasErrors = false
+        //   if ((draft.role.length = 0)) {
+        //     draft.role.hasErrors = true
+        //     draft.role.message = "Please include a role"
+        //   }
+        return
       case "submitForm":
-        if (!draft.username.hasErrors && draft.username.isUnique && !draft.oldEmail.hasErrors && draft.oldEmail.isUnique && !draft.password.hasErrors && !draft.role.hasErrors) {
+        if (!draft.username.hasErrors && draft.username.isUnique && !draft.oldEmail.hasErrors && draft.oldEmail.isUnique && !draft.password.hasErrors && !draft.App_Acronym.hasErrors) {
           draft.submitCount++
         }
         return
@@ -171,6 +221,25 @@ function CreateUser() {
       }
     }
     checkGroup()
+  }, [])
+
+  useEffect(() => {
+    //const ourRequest = Axios.CancelToken.source()
+    async function fetchData() {
+      try {
+        const response = await Axios.get("/getApp", { withCredentials: true })
+        console.log(response.data)
+        setApp(response.data)
+        setNetworkStatus("resolved")
+      } catch (e) {
+        console.log("There was a problem.")
+        console.log(e)
+      }
+    }
+    fetchData()
+    // return () => {
+    //   ourRequest.cancel()
+    // }
   }, [])
 
   useEffect(() => {
@@ -220,7 +289,7 @@ function CreateUser() {
     if (state.submitCount) {
       async function fetchResults() {
         try {
-          const response = await Axios.post("/register", { username: state.username.value, oldEmail: state.oldEmail.value, password: state.password.value, role: state.role.value }, { withCredentials: true })
+          const response = await Axios.post("/register", { username: state.username.value, oldEmail: state.oldEmail.value, password: state.password.value, App_Acronym: state.App_Acronym.value, role: personGroup }, { withCredentials: true })
           appDispatch({ type: "login", data: response.data })
           navigate("/userManagement")
         } catch (e) {
@@ -240,68 +309,90 @@ function CreateUser() {
     dispatch({ type: "emailAfterDelay", value: state.oldEmail.value, noRequest: true })
     dispatch({ type: "passwordImmediately", value: state.password.value })
     dispatch({ type: "passwordAfterDelay", value: state.password.value, noRequest: true })
+    dispatch({ type: "acronymImmediately", value: state.App_Acronym.value })
     dispatch({ type: "roleImmediately", value: state.role.value })
     dispatch({ type: "submitForm" })
   }
+  if (networkStatus === "resolved") {
+    return (
+      <Page title="Creating New User">
+        <form onSubmit={handleSubmit}>
+          <div className="form">
+            <div className="form-body">
+              <div className="username">
+                <label className="form__label" htmlFor="firstName">
+                  Username{" "}
+                </label>
+                <input onChange={e => dispatch({ type: "usernameImmediately", value: e.target.value })} className="form__input" type="text" id="firstName" placeholder="Username" autoComplete="off" />
+                <CSSTransition nodeRef={nodeRef} in={state.username.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
+                  <div className="alert alert-danger small liveValidateMessage">{state.username.message}</div>
+                </CSSTransition>
+              </div>
 
-  return (
-    <Page title="Creating New User">
-      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-        <Container>
-          <Navbar.Brand href="/">Kanban App</Navbar.Brand>
-        </Container>
-      </Navbar>
-      <form onSubmit={handleSubmit}>
-        <div className="form">
-          <div className="form-body">
-            <div className="username">
-              <label className="form__label" htmlFor="firstName">
-                Username{" "}
-              </label>
-              <input onChange={e => dispatch({ type: "usernameImmediately", value: e.target.value })} className="form__input" type="text" id="firstName" placeholder="Username" autoComplete="off" />
-              <CSSTransition nodeRef={nodeRef} in={state.username.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
-                <div className="alert alert-danger small liveValidateMessage">{state.username.message}</div>
-              </CSSTransition>
+              <div className="email">
+                <label className="form__label" htmlFor="email">
+                  Email{" "}
+                </label>
+                <input onChange={e => dispatch({ type: "emailImmediately", value: e.target.value })} type="email" id="email" className="form__input" placeholder="Email" autoComplete="off" />
+                <CSSTransition nodeRef={nodeRef} in={state.oldEmail.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
+                  <div className="alert alert-danger small liveValidateMessage">{state.oldEmail.message}</div>
+                </CSSTransition>
+              </div>
+              <div className="password">
+                <label className="form__label" htmlFor="password">
+                  Password{" "}
+                </label>
+                <input onChange={e => dispatch({ type: "passwordImmediately", value: e.target.value })} className="form__input" type="password" id="password" placeholder="Password" autoComplete="off" />
+                <CSSTransition nodeRef={nodeRef} in={state.password.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
+                  <div className="alert alert-danger small liveValidateMessage">{state.password.message}</div>
+                </CSSTransition>
+              </div>
+              <div style={{ display: "flex" }}>
+                <FormControl sx={{ m: 1, width: 200 }}>
+                  <InputLabel id="demo-simple-select-label">App Acronym</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    onChange={e => {
+                      dispatch({ type: "acronymImmediately", value: e.target.value })
+                      setAValue(e.target.value)
+                    }}
+                    value={aValue}
+                    label="App Acronym"
+                  >
+                    {app.map((item, i) => (
+                      <MenuItem key={item.App_Acronym} value={item.App_Acronym}>
+                        <ListItemText primary={item.App_Acronym} />
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <div>
+                  <FormControl sx={{ m: 1, width: 200 }}>
+                    <InputLabel id="demo-multiple-checkbox-label">Group</InputLabel>
+                    <Select labelId="demo-multiple-checkbox-label" id="demo-multiple-checkbox" multiple value={personGroup} onChange={handleChange} input={<OutlinedInput label="Tag" />} renderValue={selected => selected.join(", ")} MenuProps={MenuProps}>
+                      {groups.map(group => (
+                        <MenuItem key={group} value={group}>
+                          <Checkbox checked={personGroup.indexOf(group) > -1} />
+                          <ListItemText primary={group} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
+              </div>
             </div>
-
-            <div className="email">
-              <label className="form__label" htmlFor="email">
-                Email{" "}
-              </label>
-              <input onChange={e => dispatch({ type: "emailImmediately", value: e.target.value })} type="email" id="email" className="form__input" placeholder="Email" autoComplete="off" />
-              <CSSTransition nodeRef={nodeRef} in={state.oldEmail.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
-                <div className="alert alert-danger small liveValidateMessage">{state.oldEmail.message}</div>
-              </CSSTransition>
-            </div>
-            <div className="password">
-              <label className="form__label" htmlFor="password">
-                Password{" "}
-              </label>
-              <input onChange={e => dispatch({ type: "passwordImmediately", value: e.target.value })} className="form__input" type="password" id="password" placeholder="Password" autoComplete="off" />
-              <CSSTransition nodeRef={nodeRef} in={state.password.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
-                <div className="alert alert-danger small liveValidateMessage">{state.password.message}</div>
-              </CSSTransition>
-            </div>
-            <div className="role">
-              <label className="form__label" htmlFor="role">
-                Group{" "}
-              </label>
-              <select onChange={e => dispatch({ type: "roleHave", value: e.target.value })}>
-                <option value="Superadmin">Superadmin</option>
-                <option value="Member">Member</option>
-                <option value="Lead">Lead</option>
-                <option value="PM">PM</option>
-              </select>
+            <div className="footer">
+              <button type="submit" className="btn">
+                Create New User
+              </button>
             </div>
           </div>
-          <div className="footer">
-            <button type="submit" className="btn">
-              Create New User
-            </button>
-          </div>
-        </div>
-      </form>
-    </Page>
-  )
+        </form>
+      </Page>
+    )
+  } else {
+    return null
+  }
 }
 export default CreateUser

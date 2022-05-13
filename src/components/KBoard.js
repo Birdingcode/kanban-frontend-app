@@ -192,6 +192,11 @@ function KBoard() {
 
   function handleCardMove(_card, source, destination) {
     const updatedBoard = moveCard(controlledBoard, source, destination)
+    console.log(source.fromColumnId)
+    console.log(source.fromPosition)
+    console.log(destination.toColumnId)
+    console.log(destination.toPosition)
+
     setBoard(updatedBoard)
   }
 

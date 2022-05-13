@@ -95,7 +95,7 @@ function UserManagement() {
           <tr>
             <th>Username</th>
             <th>Email</th>
-            <th>Group(Role)</th>
+            <th>App - Role</th>
             <th>Status</th>
             <th>Change Status</th>
             <th>Change Email</th>
@@ -107,7 +107,13 @@ function UserManagement() {
             <tr key={item.username}>
               <td>{item.username}</td>
               <td>{item.email}</td>
-              <td>{item.role}</td>
+              <td>
+                {item.usergrp.map((r, k) => (
+                  <div>
+                    {r.App_Acronym} - {r.role}
+                  </div>
+                ))}
+              </td>
               <td style={{ color: item.status === true ? "green" : "red" }}>{item.status ? "True" : "False"}</td>
               <td>
                 <button onClick={e => changeStatus(e, item.username)}>Click</button>
