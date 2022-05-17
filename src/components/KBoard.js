@@ -5,8 +5,30 @@ import Page from "./Page"
 import Board, { moveCard, renderCard } from "@asseinfo/react-kanban"
 import "@asseinfo/react-kanban/dist/styles.css"
 
+//mui
+import { styled } from "@mui/material/styles"
+import Box from "@mui/material/Box"
+import Paper from "@mui/material/Paper"
+import Grid from "@mui/material/Grid"
+import Card from "@mui/material/Card"
+import { CardContent, CardHeader } from "@mui/material"
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+  ...theme.typography.body2,
+  padding: theme.spacing(2),
+  maxWidth: 300,
+  color: theme.palette.text.primary
+}))
+
+const message = `Truncation should be conditionally applicable on this long line of text
+ as this is a much longer line than what the container can support. `
+
 function KBoard() {
+  let navigate = useNavigate()
+
   const { App_Acronym } = useParams()
+  const [plan, setPlan] = useState([])
   const [groupAuth, setGroupAuth] = useState()
   const cards = []
 
@@ -34,7 +56,6 @@ function KBoard() {
       try {
         const response = await Axios.get("/getTask", { params: { App_Acronym: App_Acronym }, withCredentials: true })
 
-        let taskResult = response.data
         console.log(response.data)
         sortBoard(response.data)
 
@@ -45,6 +66,25 @@ function KBoard() {
       }
     }
     fetchData()
+    // return () => {
+    //   ourRequest.cancel()
+    // }
+  }, [])
+
+  useEffect(() => {
+    //const ourRequest = Axios.CancelToken.source()
+    async function fetchPlan() {
+      try {
+        const response = await Axios.get("/getSpecificPlan", { params: { App_Acronym: App_Acronym }, withCredentials: true })
+
+        console.log(response.data)
+        setPlan(response.data)
+      } catch (e) {
+        console.log("There was a problem.")
+        console.log(e)
+      }
+    }
+    fetchPlan()
     // return () => {
     //   ourRequest.cancel()
     // }
@@ -200,23 +240,128 @@ function KBoard() {
     setBoard(updatedBoard)
   }
 
+  function changePlan(App_Acronym, Plan_name) {
+    navigate(`/project/${App_Acronym}/editPlan/${Plan_name}`)
+  }
+
   if (networkStatus === "resolved") {
     return (
       <Page title="Project">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <Board
-            renderCard={({ title, description, notes }) => (
-              <div>
-                <h4>{title}</h4>
-                <p>{description}</p>
-                <button>Add Note</button>
-              </div>
-            )}
-            onCardDragEnd={handleCardMove}
-            disableColumnDrag
-          >
-            {controlledBoard}
-          </Board>
+          <div style={{ position: "absolute", left: 0, top: 58 }}>
+            {plan.map((item, i) => (
+              <Box sx={{ flexGrow: 1, overflow: "hidden", px: 2 }}>
+                <StyledPaper
+                  sx={{
+                    my: 1,
+                    mx: "auto",
+                    p: 1
+                  }}
+                >
+                  <Grid container wrap="nowrap" spacing={1}>
+                    <Grid item>
+                      <Card>
+                        <CardHeader title={item.Plan_name} />
+                        <CardContent>
+                          <Grid container spacing={2}>
+                            <Grid item xs={6} sm={6}>
+                              <Grid container>
+                                <Grid container justify="space-evenly">
+                                  <label>Start Date: </label>
+                                  <label>{new Date(item.Plan_startDate).toISOString().split("T")[0]}</label>
+                                  <button
+                                    onClick={() => {
+                                      changePlan(item.App_Acronym, item.Plan_name)
+                                    }}
+                                  >
+                                    Edit Plan
+                                  </button>
+                                </Grid>
+                              </Grid>
+                            </Grid>
+                            <Grid item xs={6} sm={6}>
+                              <Grid container>
+                                <Grid container justify="space-evenly">
+                                  <label>End Date: </label>
+                                  <label>{new Date(item.Plan_endDate).toISOString().split("T")[0]}</label>
+                                </Grid>
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  </Grid>
+                </StyledPaper>
+              </Box>
+            ))}
+
+            {/*<Box sx={{ flexGrow: 1, overflow: "hidden", px: 2 }}>
+              <StyledPaper
+                sx={{
+                  my: 1,
+                  mx: "auto",
+                  p: 1
+                }}
+              >
+                <Grid container wrap="nowrap" spacing={2}>
+                  <Grid item>
+                    <Avatar>W</Avatar>
+                  </Grid>
+                  <Grid item xs zeroMinWidth>
+                    <Typography noWrap>{message}</Typography>
+                  </Grid>
+                </Grid>
+              </StyledPaper>
+              <StyledPaper
+                sx={{
+                  my: 1,
+                  mx: "auto",
+                  p: 1
+                }}
+              >
+                <Grid container wrap="nowrap" spacing={2}>
+                  <Grid item>
+                    <Avatar>W</Avatar>
+                  </Grid>
+                  <Grid item xs>
+                    <Typography noWrap>{message}</Typography>
+                  </Grid>
+                </Grid>
+              </StyledPaper>
+              <StyledPaper
+                sx={{
+                  my: 1,
+                  mx: "auto",
+                  p: 1
+                }}
+              >
+                <Grid container wrap="nowrap" spacing={2}>
+                  <Grid item>
+                    <Avatar>W</Avatar>
+                  </Grid>
+                  <Grid item xs>
+                    <Typography>{message}</Typography>
+                  </Grid>
+                </Grid>
+              </StyledPaper>
+            </Box>*/}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Board
+              renderCard={({ title, description, notes }) => (
+                <div>
+                  <h4>{title}</h4>
+                  <p>{description}</p>
+                  <button>Add Note</button>
+                </div>
+              )}
+              onCardDragEnd={handleCardMove}
+              disableColumnDrag
+            >
+              {controlledBoard}
+            </Board>
+          </div>
         </div>
       </Page>
     )

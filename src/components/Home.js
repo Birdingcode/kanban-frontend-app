@@ -59,11 +59,19 @@ function Home() {
               <Card.Text>{item.App_Description}</Card.Text>
               <Button
                 onClick={() => {
+                  handleEdit(item.App_Acronym)
+                }}
+                variant="secondary"
+              >
+                Edit
+              </Button>{" "}
+              <Button
+                onClick={() => {
                   handleSubmit(item.App_Acronym)
                 }}
                 variant="primary"
               >
-                Go somewhere
+                Select
               </Button>
             </Card.Body>
           </Card>
@@ -75,6 +83,10 @@ function Home() {
 
   function handleSubmit(proj) {
     navigate(`/project/${proj}`)
+  }
+
+  function handleEdit(proj) {
+    navigate(`/project/edit/${proj}`)
   }
 
   return (

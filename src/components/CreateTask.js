@@ -309,7 +309,7 @@ function CreateTask() {
               <label className="form__label" htmlFor="taskCreator">
                 Task Creator{" "}
               </label>
-              <input value={localStorage.getItem("username")} type="taskCreator" id="taskCreator" className="form__input" placeholder="Task Creator" autoComplete="off" readOnly />
+              <input style={{ backgroundColor: "#ccc" }} value={localStorage.getItem("username")} type="taskCreator" id="taskCreator" className="form__input" placeholder="Task Creator" autoComplete="off" readOnly />
             </div>
             <div className="taskOwner">
               <label className="form__label" htmlFor="taskOwner">
@@ -330,7 +330,7 @@ function CreateTask() {
               <label className="form__label" htmlFor="createDate">
                 Create Date{" "}
               </label>
-              <input value={date} className="form__input" type="date" id="createDate" placeholder="Create Date" autoComplete="off" readOnly />
+              <input style={{ backgroundColor: "#ccc" }} value={date} className="form__input" type="date" id="createDate" placeholder="Create Date" autoComplete="off" readOnly />
             </div>
           </div>
           <div className="footer">

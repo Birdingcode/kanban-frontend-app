@@ -89,6 +89,9 @@ function UserManagement() {
         <Link to={"/userManagement/createUser"} className="nav-item nav-link">
           <button>Create New User</button>
         </Link>
+        <Link to={"/userManagement/createGroup"} className="nav-item nav-link">
+          <button>Create New Group</button>
+        </Link>
       </div>
       <Table striped bordered hover variant="dark">
         <thead style={{ textAlign: "center" }}>

@@ -195,7 +195,7 @@ function ChangeEmail() {
               <label className="form__label" htmlFor="oldEmail">
                 Old Email{" "}
               </label>
-              <input value={location.state.oldEmail} type="oldEmail" id="oldEmail" className="form__input" placeholder="Old Email" autoComplete="off" readOnly />
+              <input style={{ backgroundColor: "#ccc" }} value={location.state.oldEmail} type="oldEmail" id="oldEmail" className="form__input" placeholder="Old Email" autoComplete="off" readOnly />
             </div>
             <div className="newEmail">
               <label className="form__label" htmlFor="newEmail">

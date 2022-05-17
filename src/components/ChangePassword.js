@@ -202,7 +202,7 @@ function ChangePassword() {
               <label className="form__label" htmlFor="username">
                 Username{" "}
               </label>
-              <input value={location.state.username} className="form__input" type="text" id="firstName" placeholder="Username" autoComplete="off" readOnly />
+              <input style={{ backgroundColor: "#ccc" }} value={location.state.username} className="form__input" type="text" id="firstName" placeholder="Username" autoComplete="off" readOnly />
             </div>
             <div className="password">
               <label className="form__label" htmlFor="password">

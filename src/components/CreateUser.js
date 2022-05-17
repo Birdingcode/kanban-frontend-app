@@ -24,10 +24,9 @@ const MenuProps = {
     }
   }
 }
-const groups = ["Superadmin", "PM", "Lead", "Member"]
 
 function CreateUser() {
-  const [app, setApp] = useImmer([])
+  const [groupApp, setGroupApp] = useImmer([])
   let navigate = useNavigate()
   const nodeRef = React.useRef(null)
   const appDispatch = useContext(DispatchContext)
@@ -35,7 +34,7 @@ function CreateUser() {
 
   //mui
   const [personGroup, setPersonGroup] = useState([])
-  const [aValue, setAValue] = useState("")
+  //const [aValue, setAValue] = useState("")
   const handleChange = event => {
     const {
       target: { value }
@@ -227,9 +226,22 @@ function CreateUser() {
     //const ourRequest = Axios.CancelToken.source()
     async function fetchData() {
       try {
-        const response = await Axios.get("/getApp", { withCredentials: true })
-        console.log(response.data)
-        setApp(response.data)
+        const response = await Axios.get("/getGroupApp", { withCredentials: true })
+        // console.log(response.data)
+
+        let groupAppArr = []
+
+        {
+          response.data.map((e, i) => {
+            let elementConcat = ""
+            elementConcat += e.appAcronym
+            elementConcat += " - "
+            elementConcat += e.role
+            groupAppArr.push(elementConcat)
+          })
+        }
+
+        setGroupApp(groupAppArr)
         setNetworkStatus("resolved")
       } catch (e) {
         console.log("There was a problem.")
@@ -289,7 +301,7 @@ function CreateUser() {
     if (state.submitCount) {
       async function fetchResults() {
         try {
-          const response = await Axios.post("/register", { username: state.username.value, oldEmail: state.oldEmail.value, password: state.password.value, App_Acronym: state.App_Acronym.value, role: personGroup }, { withCredentials: true })
+          const response = await Axios.post("/register", { username: state.username.value, oldEmail: state.oldEmail.value, password: state.password.value, role: personGroup }, { withCredentials: true })
           appDispatch({ type: "login", data: response.data })
           navigate("/userManagement")
         } catch (e) {
@@ -309,7 +321,7 @@ function CreateUser() {
     dispatch({ type: "emailAfterDelay", value: state.oldEmail.value, noRequest: true })
     dispatch({ type: "passwordImmediately", value: state.password.value })
     dispatch({ type: "passwordAfterDelay", value: state.password.value, noRequest: true })
-    dispatch({ type: "acronymImmediately", value: state.App_Acronym.value })
+    //dispatch({ type: "acronymImmediately", value: state.App_Acronym.value })
     dispatch({ type: "roleImmediately", value: state.role.value })
     dispatch({ type: "submitForm" })
   }
@@ -347,8 +359,8 @@ function CreateUser() {
                   <div className="alert alert-danger small liveValidateMessage">{state.password.message}</div>
                 </CSSTransition>
               </div>
-              <div style={{ display: "flex" }}>
-                <FormControl sx={{ m: 1, width: 200 }}>
+
+              {/*<FormControl sx={{ m: 1, width: 200 }}>
                   <InputLabel id="demo-simple-select-label">App Acronym</InputLabel>
                   <Select
                     labelId="demo-simple-select-label"
@@ -366,20 +378,19 @@ function CreateUser() {
                       </MenuItem>
                     ))}
                   </Select>
+                </FormControl>*/}
+              <div>
+                <FormControl sx={{ m: 0, width: 381 }}>
+                  <InputLabel id="demo-multiple-checkbox-label">Group</InputLabel>
+                  <Select labelId="demo-multiple-checkbox-label" id="demo-multiple-checkbox" multiple value={personGroup} onChange={handleChange} input={<OutlinedInput label="Tag" />} renderValue={selected => selected.join(", ")} MenuProps={MenuProps}>
+                    {groupApp.map(group => (
+                      <MenuItem key={group} value={group}>
+                        <Checkbox checked={personGroup.indexOf(group) > -1} />
+                        <ListItemText primary={group} />
+                      </MenuItem>
+                    ))}
+                  </Select>
                 </FormControl>
-                <div>
-                  <FormControl sx={{ m: 1, width: 200 }}>
-                    <InputLabel id="demo-multiple-checkbox-label">Group</InputLabel>
-                    <Select labelId="demo-multiple-checkbox-label" id="demo-multiple-checkbox" multiple value={personGroup} onChange={handleChange} input={<OutlinedInput label="Tag" />} renderValue={selected => selected.join(", ")} MenuProps={MenuProps}>
-                      {groups.map(group => (
-                        <MenuItem key={group} value={group}>
-                          <Checkbox checked={personGroup.indexOf(group) > -1} />
-                          <ListItemText primary={group} />
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </div>
               </div>
             </div>
             <div className="footer">

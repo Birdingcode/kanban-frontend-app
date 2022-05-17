@@ -17,12 +17,15 @@ import FlashMessages from "./components/FlashMessages"
 import Home from "./components/Home"
 import UserManagement from "./components/UserManagement"
 import CreateUser from "./components/CreateUser"
+import CreateGroup from "./components/CreateGroup"
 import ChangePassword from "./components/ChangePassword"
 import ChangeEmail from "./components/ChangeEmail"
 import ChangePersonalPw from "./components/ChangePersonalPw"
 import CreateApp from "./components/CreateApp"
 import CreatePlan from "./components/CreatePlan"
 import CreateTask from "./components/CreateTask"
+import EditApp from "./components/EditApp"
+import EditPlan from "./components/EditPlan"
 import NotFound from "./components/NotFound"
 import KBoard from "./components/KBoard"
 import NavBar from "./components/NavBar"
@@ -70,11 +73,14 @@ export default function App() {
             <Route path="/changePersonalPw" element={state.loggedIn ? <ChangePersonalPw /> : <CenterGuest />} />
             <Route path="/userManagement/" element={state.loggedIn ? <UserManagement /> : <CenterGuest />} />
             <Route path="/userManagement/createUser" element={state.loggedIn ? <CreateUser /> : <CenterGuest />} />
+            <Route path="/userManagement/createGroup" element={state.loggedIn ? <CreateGroup /> : <CenterGuest />} />
             <Route path="/userManagement/changePassword" element={state.loggedIn ? <ChangePassword /> : <CenterGuest />} />
             <Route path="/userManagement/changeEmail" element={state.loggedIn ? <ChangeEmail /> : <CenterGuest />} />
             <Route path="/createApp" element={state.loggedIn ? <CreateApp /> : <CenterGuest />} />
             <Route path="/createPlan" element={state.loggedIn ? <CreatePlan /> : <CenterGuest />} />
             <Route path="/project/:App_Acronym" element={state.loggedIn ? <KBoard /> : <CenterGuest />} />
+            <Route path="/project/edit/:App_Acronym" element={state.loggedIn ? <EditApp /> : <CenterGuest />} />
+            <Route path="/project/:App_Acronym/editPlan/:Plan_name" element={state.loggedIn ? <EditPlan /> : <CenterGuest />} />
             <Route path="/createTask" element={state.loggedIn ? <CreateTask /> : <CenterGuest />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
