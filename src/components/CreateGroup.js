@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useContext } from "react"
+import React, { useEffect, useContext } from "react"
 import Page from "./Page"
 import { useImmer } from "use-immer"
 import DispatchContext from "../DispatchContext"
 import { useImmerReducer } from "use-immer"
 import Axios from "axios"
 import { useNavigate } from "react-router-dom"
-import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap"
 import { CSSTransition } from "react-transition-group"
 
 function CreateGroup() {
@@ -45,12 +44,11 @@ function CreateGroup() {
   useEffect(() => {
     async function checkGroup() {
       try {
-        const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username") }, { withCredentials: true })
+        const response = await Axios.post("/checkGroupAPM", { username: localStorage.getItem("username") }, { withCredentials: true })
         console.log(response.data)
-        if (response.data !== true) {
+        if (response.data !== "authAdmin") {
           navigate("/")
         }
-        //setState(response.data)
       } catch (e) {
         console.log(e)
       }
@@ -65,14 +63,12 @@ function CreateGroup() {
           const response = await Axios.post("/createGroup", { role: state.role.value }, { withCredentials: true })
 
           console.log(response)
-          //appDispatch({ type: "login", data: response.data })
           navigate("/userManagement")
         } catch (e) {
           console.log(e.response)
         }
       }
       fetchResults()
-      //return () => ourRequest.cancel()
     }
   }, [state.submitCount])
 

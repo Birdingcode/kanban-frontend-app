@@ -21,9 +21,6 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.primary
 }))
 
-const message = `Truncation should be conditionally applicable on this long line of text
- as this is a much longer line than what the container can support. `
-
 function KBoard() {
   let navigate = useNavigate()
 
@@ -34,21 +31,21 @@ function KBoard() {
 
   const [networkStatus, setNetworkStatus] = useState("pending")
 
-  useEffect(() => {
-    async function checkGroup() {
-      try {
-        const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username") }, { withCredentials: true })
-        console.log(response.data)
-        if (response.data) {
-          setGroupAuth(response.data)
-        }
-        //setState(response.data)
-      } catch (e) {
-        console.log(e)
-      }
-    }
-    checkGroup()
-  }, [])
+  // useEffect(() => {
+  //   async function checkGroup() {
+  //     try {
+  //       const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username") }, { withCredentials: true })
+  //       console.log(response.data)
+  //       if (response.data) {
+  //         setGroupAuth(response.data)
+  //       }
+  //       //setState(response.data)
+  //     } catch (e) {
+  //       console.log(e)
+  //     }
+  //   }
+  //   checkGroup()
+  // }, [])
 
   useEffect(() => {
     //const ourRequest = Axios.CancelToken.source()
@@ -230,14 +227,45 @@ function KBoard() {
 
   const [controlledBoard, setBoard] = useState(board)
 
-  function handleCardMove(_card, source, destination) {
+  async function handleCardMove(_card, source, destination) {
     const updatedBoard = moveCard(controlledBoard, source, destination)
-    console.log(source.fromColumnId)
-    console.log(source.fromPosition)
-    console.log(destination.toColumnId)
-    console.log(destination.toPosition)
 
-    setBoard(updatedBoard)
+    let sourceID = source.fromColumnId
+    let destinationID = destination.toColumnId
+    let direction = sourceID - destinationID
+
+    if (direction === -1) {
+      console.log("negative")
+      try {
+        const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username"), sourceID }, { params: { App_Acronym: App_Acronym }, withCredentials: true })
+        console.log(response.data)
+        if (response.data !== false) {
+          console.log(response.data)
+
+          setBoard(updatedBoard)
+        }
+      } catch (e) {
+        console.log("There was a problem.")
+        console.log(e)
+      }
+    } else {
+      console.log("positive")
+      try {
+        const response = await Axios.post("/checkGroupBack", { username: localStorage.getItem("username"), sourceID }, { params: { App_Acronym: App_Acronym }, withCredentials: true })
+        if (response.data !== false) {
+          console.log(response.data)
+
+          setBoard(updatedBoard)
+        }
+      } catch (e) {
+        console.log("There was a problem.")
+        console.log(e)
+      }
+    }
+
+    console.log(controlledBoard)
+    console.log(updatedBoard)
+    //setBoard(updatedBoard)
   }
 
   function changePlan(App_Acronym, Plan_name) {
@@ -295,64 +323,13 @@ function KBoard() {
                 </StyledPaper>
               </Box>
             ))}
-
-            {/*<Box sx={{ flexGrow: 1, overflow: "hidden", px: 2 }}>
-              <StyledPaper
-                sx={{
-                  my: 1,
-                  mx: "auto",
-                  p: 1
-                }}
-              >
-                <Grid container wrap="nowrap" spacing={2}>
-                  <Grid item>
-                    <Avatar>W</Avatar>
-                  </Grid>
-                  <Grid item xs zeroMinWidth>
-                    <Typography noWrap>{message}</Typography>
-                  </Grid>
-                </Grid>
-              </StyledPaper>
-              <StyledPaper
-                sx={{
-                  my: 1,
-                  mx: "auto",
-                  p: 1
-                }}
-              >
-                <Grid container wrap="nowrap" spacing={2}>
-                  <Grid item>
-                    <Avatar>W</Avatar>
-                  </Grid>
-                  <Grid item xs>
-                    <Typography noWrap>{message}</Typography>
-                  </Grid>
-                </Grid>
-              </StyledPaper>
-              <StyledPaper
-                sx={{
-                  my: 1,
-                  mx: "auto",
-                  p: 1
-                }}
-              >
-                <Grid container wrap="nowrap" spacing={2}>
-                  <Grid item>
-                    <Avatar>W</Avatar>
-                  </Grid>
-                  <Grid item xs>
-                    <Typography>{message}</Typography>
-                  </Grid>
-                </Grid>
-              </StyledPaper>
-            </Box>*/}
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
             <Board
-              renderCard={({ title, description, notes }) => (
+              renderCard={({ title, plan, notes }) => (
                 <div>
                   <h4>{title}</h4>
-                  <p>{description}</p>
+                  <p>{plan}</p>
                   <button>Add Note</button>
                 </div>
               )}

@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useContext } from "react"
+import React, { useEffect, useContext } from "react"
 import Page from "./Page"
 import { useImmer } from "use-immer"
 import DispatchContext from "../DispatchContext"
 import { useImmerReducer } from "use-immer"
 import Axios from "axios"
 import { useNavigate } from "react-router-dom"
-import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap"
 import { CSSTransition } from "react-transition-group"
 
 function CreateApp() {
@@ -101,12 +100,13 @@ function CreateApp() {
   useEffect(() => {
     async function checkGroup() {
       try {
-        const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username") }, { withCredentials: true })
+        const response = await Axios.post("/checkGroupAPM", { username: localStorage.getItem("username") }, { withCredentials: true })
         console.log(response.data)
-        if (response.data !== true) {
+        if (response.data === "authPM" || response.data === "authAdmin") {
+          setNetworkStatus("resolved")
+        } else {
           navigate("/")
         }
-        //setState(response.data)
       } catch (e) {
         console.log(e)
       }
@@ -115,22 +115,17 @@ function CreateApp() {
   }, [])
 
   useEffect(() => {
-    //const ourRequest = Axios.CancelToken.source()
     async function fetchData() {
       try {
         const response = await Axios.get("/getApp", { withCredentials: true })
         console.log(response.data)
         setApp(response.data)
-        //setProfileData(response.data)
       } catch (e) {
         console.log("There was a problem.")
         console.log(e)
       }
     }
     fetchData()
-    // return () => {
-    //   ourRequest.cancel()
-    // }
   }, [])
 
   useEffect(() => {
@@ -140,14 +135,12 @@ function CreateApp() {
           const response = await Axios.post("/createPlan", { Plan_name: state.Plan_name.value, App_Acronym: state.App_Acronym.value, Plan_startDate: state.Plan_startDate.value, Plan_endDate: state.Plan_endDate.value }, { withCredentials: true })
 
           console.log(response)
-          //appDispatch({ type: "login", data: response.data })
           navigate("/")
         } catch (e) {
           console.log(e.response)
         }
       }
       fetchResults()
-      //return () => ourRequest.cancel()
     }
   }, [state.submitCount])
 

@@ -100,12 +100,13 @@ function EditPlan() {
   useEffect(() => {
     async function checkGroup() {
       try {
-        const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username") }, { withCredentials: true })
+        const response = await Axios.post("/checkGroupAPM", { username: localStorage.getItem("username") }, { withCredentials: true })
         console.log(response.data)
-        if (response.data !== true) {
+        if (response.data === "authPM" || response.data === "authAdmin") {
+          setNetworkStatus("resolved")
+        } else {
           navigate("/")
         }
-        //setState(response.data)
       } catch (e) {
         console.log(e)
       }
@@ -114,7 +115,6 @@ function EditPlan() {
   }, [])
 
   useEffect(() => {
-    //const ourRequest = Axios.CancelToken.source()
     async function fetchPlan() {
       try {
         const response = await Axios.get("/getSpecificPlanE", { params: { App_Acronym: App_Acronym, Plan_name: Plan_name }, withCredentials: true })
@@ -132,9 +132,6 @@ function EditPlan() {
       }
     }
     fetchPlan()
-    // return () => {
-    //   ourRequest.cancel()
-    // }
   }, [])
 
   useEffect(() => {
@@ -144,14 +141,12 @@ function EditPlan() {
           const response = await Axios.post("/editPlan", { Plan_name: state.Plan_name.value, App_Acronym: state.App_Acronym.value, Plan_startDate: state.Plan_startDate.value, Plan_endDate: state.Plan_endDate.value }, { withCredentials: true })
 
           console.log(response)
-          //appDispatch({ type: "login", data: response.data })
           navigate(`/project/${App_Acronym}`)
         } catch (e) {
           console.log(e.response)
         }
       }
       fetchResults()
-      //return () => ourRequest.cancel()
     }
   }, [state.submitCount])
 

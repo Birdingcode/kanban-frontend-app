@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useContext } from "react"
+import React, { useEffect, useContext } from "react"
 import Page from "./Page"
 import DispatchContext from "../DispatchContext"
 import { useImmerReducer } from "use-immer"
 import Axios from "axios"
 import { CSSTransition } from "react-transition-group"
 import { useNavigate, useLocation } from "react-router-dom"
-import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap"
 
 function ChangeEmail() {
   let navigate = useNavigate()
@@ -13,13 +12,6 @@ function ChangeEmail() {
   const appDispatch = useContext(DispatchContext)
   const nodeRef = React.useRef(null)
   const initialState = {
-    // oldEmail: {
-    //   value: "",
-    //   hasErrors: false,
-    //   message: "",
-    //   isUnique: false,
-    //   checkCount: 0
-    // },
     newEmail: {
       value: "",
       hasErrors: false,
@@ -38,29 +30,6 @@ function ChangeEmail() {
 
   function ourReducer(draft, action) {
     switch (action.type) {
-      // case "emailImmediately":
-      //   draft.oldEmail.hasErrors = false
-      //   draft.oldEmail.value = action.value
-      //   return
-      // case "emailAfterDelay":
-      //   if (!/^\S+@\S+$/.test(draft.oldEmail.value)) {
-      //     draft.oldEmail.hasErrors = true
-      //     draft.oldEmail.message = "You must provide a valid email address"
-      //   }
-      //   if (!draft.oldEmail.hasErrors && !action.noRequest) {
-      //     draft.oldEmail.checkCount++
-      //   }
-      //   return
-      // case "emailUniqueResults":
-      //   if (action.value == true) {
-      //     draft.oldEmail.hasErrors = false
-      //     draft.oldEmail.isUnique = false
-      //   } else {
-      //     draft.oldEmail.isUnique = true
-      //     draft.oldEmail.hasErrors = true
-      //     draft.oldEmail.message = "Email not found in database."
-      //   }
-      //   return
       case "newEmailImmediately":
         draft.newEmail.hasErrors = false
         draft.newEmail.value = action.value
@@ -110,19 +79,12 @@ function ChangeEmail() {
     }
   }, [state.newEmail.value])
 
-  // useEffect(() => {
-  //   if (state.oldEmail.value) {
-  //     const delay = setTimeout(() => dispatch({ type: "emailAfterDelay" }), 800)
-  //     return () => clearTimeout(delay)
-  //   }
-  // }, [state.oldEmail.value])
-
   useEffect(() => {
     async function checkGroup() {
       try {
-        const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username") }, { withCredentials: true })
+        const response = await Axios.post("/checkGroupAPM", { username: localStorage.getItem("username") }, { withCredentials: true })
         console.log(response.data)
-        if (response.data !== true) {
+        if (response.data !== "authAdmin") {
           navigate("/")
         }
         //setState(response.data)
@@ -132,20 +94,6 @@ function ChangeEmail() {
     }
     checkGroup()
   }, [])
-
-  // useEffect(() => {
-  //   if (state.oldEmail.checkCount) {
-  //     async function fetchResults() {
-  //       try {
-  //         const response = await Axios.post("/doesEmailExist", { oldEmail: state.oldEmail.value }, { withCredentials: true })
-  //         dispatch({ type: "emailUniqueResults", value: response.data })
-  //       } catch (e) {
-  //         console.log("There was a problem or request canceled")
-  //       }
-  //     }
-  //     fetchResults()
-  //   }
-  // }, [state.oldEmail.checkCount])
 
   useEffect(() => {
     if (state.newEmail.checkCount) {
@@ -173,14 +121,11 @@ function ChangeEmail() {
         }
       }
       fetchResults()
-      //return () => ourRequest.cancel()
     }
   }, [state.submitCount])
 
   function handleSubmit(e) {
     e.preventDefault()
-    //dispatch({ type: "emailImmediately", value: state.oldEmail.value })
-    //dispatch({ type: "emailAfterDelay", value: state.oldEmail.value, noRequest: true })
     dispatch({ type: "newEmailImmediately", value: state.newEmail.value })
     dispatch({ type: "newEmailAfterDelay", value: state.newEmail.value, noRequest: true })
     dispatch({ type: "submitForm" })

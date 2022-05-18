@@ -14,12 +14,6 @@ function EditApp() {
   const [networkStatus, setNetworkStatus] = useState("pending")
 
   const initialState = {
-    // App_Acronym: {
-    //   value: "",
-    //   hasErrors: false,
-    //   message: "",
-    //   checkCount: 0
-    // },
     App_Description: {
       value: "",
       hasErrors: false,
@@ -62,12 +56,7 @@ function EditApp() {
       message: "",
       checkCount: 0
     },
-    App_permit_Close: {
-      value: "",
-      hasErrors: false,
-      message: "",
-      checkCount: 0
-    },
+
     App_permit_Create: {
       value: "",
       hasErrors: false,
@@ -79,17 +68,6 @@ function EditApp() {
 
   function ourReducer(draft, action) {
     switch (action.type) {
-      // case "acronymImmediately":
-      //   draft.App_Acronym.hasErrors = false
-      //   draft.App_Acronym.value = action.value
-      //   if (draft.App_Acronym.value.length < 3) {
-      //     draft.App_Acronym.hasErrors = true
-      //     draft.App_Acronym.message = "Acronym must be 3 characters"
-      //   }
-      //   if (!draft.App_Acronym.hasErrors) {
-      //     draft.App_Acronym.checkCount++
-      //   }
-      //   return
       case "appDescImmediately":
         draft.App_Description.hasErrors = false
         draft.App_Description.value = action.value
@@ -155,14 +133,7 @@ function EditApp() {
           draft.App_permit_Done.message = "Please include necessary permissions"
         }
         return
-      case "permitClose":
-        draft.App_permit_Close.value = action.value
-        draft.App_permit_Close.hasErrors = false
-        if (!draft.App_permit_Close) {
-          draft.App_permit_Close.hasErrors = true
-          draft.App_permit_Close.message = "Please include necessary permissions"
-        }
-        return
+
       case "permitCreate":
         draft.App_permit_Create.value = action.value
         draft.App_permit_Create.hasErrors = false
@@ -172,7 +143,7 @@ function EditApp() {
         }
         return
       case "submitForm":
-        if (!draft.App_Description.hasErrors && !draft.App_startDate.hasErrors && !draft.App_endDate.hasErrors && !draft.App_permit_Open.hasErrors && !draft.App_permit_toDoList.hasErrors && !draft.App_permit_Doing.hasErrors && !draft.App_permit_Done.hasErrors && !draft.App_permit_Close.hasErrors && !draft.App_permit_Create.hasErrors) {
+        if (!draft.App_Description.hasErrors && !draft.App_startDate.hasErrors && !draft.App_endDate.hasErrors && !draft.App_permit_Open.hasErrors && !draft.App_permit_toDoList.hasErrors && !draft.App_permit_Doing.hasErrors && !draft.App_permit_Done.hasErrors && !draft.App_permit_Create.hasErrors) {
           draft.submitCount++
         }
         return
@@ -184,12 +155,13 @@ function EditApp() {
   useEffect(() => {
     async function checkGroup() {
       try {
-        const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username") }, { withCredentials: true })
+        const response = await Axios.post("/checkGroupAPM", { username: localStorage.getItem("username") }, { withCredentials: true })
         console.log(response.data)
-        if (response.data !== true) {
+        if (response.data === "authPM" || response.data === "authAdmin") {
+          setNetworkStatus("resolved")
+        } else {
           navigate("/")
         }
-        //setState(response.data)
       } catch (e) {
         console.log(e)
       }
@@ -198,7 +170,6 @@ function EditApp() {
   }, [])
 
   useEffect(() => {
-    //const ourRequest = Axios.CancelToken.source()
     async function fetchData() {
       try {
         const response = await Axios.get("/getSpecificApp", { params: { App_Acronym: App_Acronym }, withCredentials: true })
@@ -210,7 +181,6 @@ function EditApp() {
         dispatch({ type: "permitToDo", value: response.data[0].App_permit_toDoList })
         dispatch({ type: "permitDoing", value: response.data[0].App_permit_Doing })
         dispatch({ type: "permitDone", value: response.data[0].App_permit_Done })
-        dispatch({ type: "permitClose", value: response.data[0].App_permit_Close })
         dispatch({ type: "permitCreate", value: response.data[0].App_permit_Create })
         setNetworkStatus("resolved")
       } catch (e) {
@@ -219,32 +189,26 @@ function EditApp() {
       }
     }
     fetchData()
-    // return () => {
-    //   ourRequest.cancel()
-    // }
   }, [])
 
   useEffect(() => {
     if (state.submitCount) {
       async function fetchResults() {
         try {
-          const response = await Axios.post("/editApp", { App_Acronym: specificApp[0].App_Acronym, App_Description: state.App_Description.value, App_startDate: state.App_startDate.value, App_endDate: state.App_endDate.value, App_permit_Open: state.App_permit_Open.value, App_permit_toDoList: state.App_permit_toDoList.value, App_permit_Doing: state.App_permit_Doing.value, App_permit_Done: state.App_permit_Done.value, App_permit_Close: state.App_permit_Close.value, App_permit_Create: state.App_permit_Create.value }, { withCredentials: true })
+          const response = await Axios.post("/editApp", { App_Acronym: specificApp[0].App_Acronym, App_Description: state.App_Description.value, App_startDate: state.App_startDate.value, App_endDate: state.App_endDate.value, App_permit_Open: state.App_permit_Open.value, App_permit_toDoList: state.App_permit_toDoList.value, App_permit_Doing: state.App_permit_Doing.value, App_permit_Done: state.App_permit_Done.value, App_permit_Create: state.App_permit_Create.value }, { withCredentials: true })
 
           console.log(response)
-          //appDispatch({ type: "login", data: response.data })
           navigate("/")
         } catch (e) {
           console.log(e.response)
         }
       }
       fetchResults()
-      //return () => ourRequest.cancel()
     }
   }, [state.submitCount])
 
   function handleSubmit(e) {
     e.preventDefault()
-    //dispatch({ type: "acronymImmediately", value: state.App_Acronym.value })
     dispatch({ type: "appDescImmediately", value: state.App_Description.value })
     dispatch({ type: "startDateImmediately", value: state.App_startDate.value })
     dispatch({ type: "endDateImmediately", value: state.App_endDate.value })
@@ -252,7 +216,6 @@ function EditApp() {
     dispatch({ type: "permitToDo", value: state.App_permit_toDoList.value })
     dispatch({ type: "permitDoing", value: state.App_permit_Doing.value })
     dispatch({ type: "permitDone", value: state.App_permit_Done.value })
-    dispatch({ type: "permitClose", value: state.App_permit_Close.value })
     dispatch({ type: "permitCreate", value: state.App_permit_Create.value })
     dispatch({ type: "submitForm" })
   }
@@ -330,18 +293,6 @@ function EditApp() {
                 </label>
                 <select onChange={e => dispatch({ type: "permitDone", value: e.target.value })}>
                   <option value="">{state.App_permit_Done.value}</option>
-                  <option value="Superadmin">Superadmin</option>
-                  <option value="Member">Member</option>
-                  <option value="Lead">Lead</option>
-                  <option value="PM">PM</option>
-                </select>
-              </div>
-              <div className="permitClose">
-                <label className="form__label" htmlFor="permitClose">
-                  Permit Close{" "}
-                </label>
-                <select onChange={e => dispatch({ type: "permitClose", value: e.target.value })}>
-                  <option value="">{state.App_permit_Close.value}</option>
                   <option value="Superadmin">Superadmin</option>
                   <option value="Member">Member</option>
                   <option value="Lead">Lead</option>

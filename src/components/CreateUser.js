@@ -31,10 +31,8 @@ function CreateUser() {
   const nodeRef = React.useRef(null)
   const appDispatch = useContext(DispatchContext)
   const [networkStatus, setNetworkStatus] = useState("pending")
-
-  //mui
   const [personGroup, setPersonGroup] = useState([])
-  //const [aValue, setAValue] = useState("")
+
   const handleChange = event => {
     const {
       target: { value }
@@ -167,14 +165,6 @@ function CreateUser() {
           draft.App_Acronym.checkCount++
         }
         return
-        // case "roleHave":
-        //   draft.role.value = action.value
-        //   draft.role.hasErrors = false
-        //   if ((draft.role.length = 0)) {
-        //     draft.role.hasErrors = true
-        //     draft.role.message = "Please include a role"
-        //   }
-        return
       case "submitForm":
         if (!draft.username.hasErrors && draft.username.isUnique && !draft.oldEmail.hasErrors && draft.oldEmail.isUnique && !draft.password.hasErrors && !draft.App_Acronym.hasErrors) {
           draft.submitCount++
@@ -209,12 +199,11 @@ function CreateUser() {
   useEffect(() => {
     async function checkGroup() {
       try {
-        const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username") }, { withCredentials: true })
+        const response = await Axios.post("/checkGroupAPM", { username: localStorage.getItem("username") }, { withCredentials: true })
         console.log(response.data)
-        if (response.data !== true) {
+        if (response.data !== "authAdmin") {
           navigate("/")
         }
-        //setState(response.data)
       } catch (e) {
         console.log(e)
       }
@@ -223,11 +212,9 @@ function CreateUser() {
   }, [])
 
   useEffect(() => {
-    //const ourRequest = Axios.CancelToken.source()
     async function fetchData() {
       try {
         const response = await Axios.get("/getGroupApp", { withCredentials: true })
-        // console.log(response.data)
 
         let groupAppArr = []
 
@@ -249,9 +236,6 @@ function CreateUser() {
       }
     }
     fetchData()
-    // return () => {
-    //   ourRequest.cancel()
-    // }
   }, [])
 
   useEffect(() => {
@@ -309,7 +293,6 @@ function CreateUser() {
         }
       }
       fetchResults()
-      //return () => ourRequest.cancel()
     }
   }, [state.submitCount])
 
@@ -321,7 +304,6 @@ function CreateUser() {
     dispatch({ type: "emailAfterDelay", value: state.oldEmail.value, noRequest: true })
     dispatch({ type: "passwordImmediately", value: state.password.value })
     dispatch({ type: "passwordAfterDelay", value: state.password.value, noRequest: true })
-    //dispatch({ type: "acronymImmediately", value: state.App_Acronym.value })
     dispatch({ type: "roleImmediately", value: state.role.value })
     dispatch({ type: "submitForm" })
   }
@@ -359,26 +341,6 @@ function CreateUser() {
                   <div className="alert alert-danger small liveValidateMessage">{state.password.message}</div>
                 </CSSTransition>
               </div>
-
-              {/*<FormControl sx={{ m: 1, width: 200 }}>
-                  <InputLabel id="demo-simple-select-label">App Acronym</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    onChange={e => {
-                      dispatch({ type: "acronymImmediately", value: e.target.value })
-                      setAValue(e.target.value)
-                    }}
-                    value={aValue}
-                    label="App Acronym"
-                  >
-                    {app.map((item, i) => (
-                      <MenuItem key={item.App_Acronym} value={item.App_Acronym}>
-                        <ListItemText primary={item.App_Acronym} />
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>*/}
               <div>
                 <FormControl sx={{ m: 0, width: 381 }}>
                   <InputLabel id="demo-multiple-checkbox-label">Group</InputLabel>

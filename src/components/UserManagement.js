@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom"
 import Axios from "axios"
 import { Table } from "react-bootstrap"
 import Page from "./Page"
-import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap"
 
 function UserManagement() {
   const [state, setState] = useImmer([])
@@ -12,9 +11,9 @@ function UserManagement() {
   useEffect(() => {
     async function checkGroup() {
       try {
-        const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username") }, { withCredentials: true })
+        const response = await Axios.post("/checkGroupAPM", { username: localStorage.getItem("username") }, { withCredentials: true })
         console.log(response.data)
-        if (response.data !== true) {
+        if (response.data !== "authAdmin") {
           navigate("/")
         }
         //setState(response.data)

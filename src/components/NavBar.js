@@ -10,7 +10,7 @@ function NavBar() {
   useEffect(() => {
     async function checkGroup() {
       try {
-        const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username") }, { withCredentials: true })
+        const response = await Axios.post("/checkGroupAPM", { username: localStorage.getItem("username") }, { withCredentials: true })
         console.log(response.data)
         if (response.data) {
           setGroupAuth(response.data)
@@ -37,9 +37,9 @@ function NavBar() {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto ">
-            {groupAuth === true ? <Nav.Link href="/UserManagement">User Management</Nav.Link> : null}
-            <Nav.Link href="/createApp">Create App</Nav.Link>
-            <Nav.Link href="/createPlan">Create Plan</Nav.Link>
+            {groupAuth === "authAdmin" ? <Nav.Link href="/UserManagement">User Management</Nav.Link> : null}
+            {groupAuth === "authPM" || groupAuth === "authAdmin" ? <Nav.Link href="/createApp">Create App</Nav.Link> : null}
+            {groupAuth === "authPM" || groupAuth === "authAdmin" ? <Nav.Link href="/createPlan">Create Plan</Nav.Link> : null}
             <Nav.Link href="/createTask">Create Task</Nav.Link>
             <NavDropdown title="Dropdown" id="collasible-nav-dropdown">
               <NavDropdown.Item href="/ChangePersonalPw">Change Password</NavDropdown.Item>
