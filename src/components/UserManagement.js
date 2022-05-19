@@ -82,6 +82,18 @@ function UserManagement() {
     }
   }
 
+  const changeGroup = async (e, username) => {
+    e.preventDefault()
+    try {
+      console.log(username)
+      navigate("/userManagement/changeGroup", { state: { username: username } }, { withCredentials: true })
+
+      //setState(response.data)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   return (
     <Page title="User Management">
       <div style={{ display: "flex" }}>
@@ -102,6 +114,7 @@ function UserManagement() {
             <th>Change Status</th>
             <th>Change Email</th>
             <th>Change Password</th>
+            <th>Change Group</th>
           </tr>
         </thead>
         <tbody style={{ textAlign: "center" }}>
@@ -125,6 +138,9 @@ function UserManagement() {
               </td>
               <td>
                 <button onClick={e => changePassword(e, item.username)}>Click</button>
+              </td>
+              <td>
+                <button onClick={e => changeGroup(e, item.username)}>Click</button>
               </td>
             </tr>
           ))}

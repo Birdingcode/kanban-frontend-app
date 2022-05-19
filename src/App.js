@@ -18,6 +18,7 @@ import Home from "./components/Home"
 import UserManagement from "./components/UserManagement"
 import CreateUser from "./components/CreateUser"
 import CreateGroup from "./components/CreateGroup"
+import ChangeGroup from "./components/ChangeGroup"
 import ChangePassword from "./components/ChangePassword"
 import ChangeEmail from "./components/ChangeEmail"
 import ChangePersonalPw from "./components/ChangePersonalPw"
@@ -76,6 +77,7 @@ export default function App() {
             <Route path="/userManagement/createGroup" element={state.loggedIn ? <CreateGroup /> : <CenterGuest />} />
             <Route path="/userManagement/changePassword" element={state.loggedIn ? <ChangePassword /> : <CenterGuest />} />
             <Route path="/userManagement/changeEmail" element={state.loggedIn ? <ChangeEmail /> : <CenterGuest />} />
+            <Route path="/userManagement/changeGroup" element={state.loggedIn ? <ChangeGroup /> : <CenterGuest />} />
             <Route path="/createApp" element={state.loggedIn ? <CreateApp /> : <CenterGuest />} />
             <Route path="/createPlan" element={state.loggedIn ? <CreatePlan /> : <CenterGuest />} />
             <Route path="/project/:App_Acronym" element={state.loggedIn ? <KBoard /> : <CenterGuest />} />

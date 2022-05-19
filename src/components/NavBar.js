@@ -2,11 +2,12 @@ import React, { useContext, useState, useEffect } from "react"
 import Axios from "axios"
 import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap"
 import DispatchContext from "../DispatchContext"
+import { useNavigate } from "react-router-dom"
 
 function NavBar() {
   const appDispatch = useContext(DispatchContext)
   const [groupAuth, setGroupAuth] = useState()
-
+  let navigate = useNavigate()
   useEffect(() => {
     async function checkGroup() {
       try {
@@ -24,6 +25,7 @@ function NavBar() {
   }, [])
 
   function handleLogout() {
+    navigate("/")
     appDispatch({ type: "logout" })
     appDispatch({ type: "flashMessage", value: "You have successfully logged out" })
     Axios.get("/logout", { withCredentials: true })

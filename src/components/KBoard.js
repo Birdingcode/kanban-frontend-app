@@ -26,29 +26,10 @@ function KBoard() {
 
   const { App_Acronym } = useParams()
   const [plan, setPlan] = useState([])
-  const [groupAuth, setGroupAuth] = useState()
   const cards = []
-
   const [networkStatus, setNetworkStatus] = useState("pending")
 
-  // useEffect(() => {
-  //   async function checkGroup() {
-  //     try {
-  //       const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username") }, { withCredentials: true })
-  //       console.log(response.data)
-  //       if (response.data) {
-  //         setGroupAuth(response.data)
-  //       }
-  //       //setState(response.data)
-  //     } catch (e) {
-  //       console.log(e)
-  //     }
-  //   }
-  //   checkGroup()
-  // }, [])
-
   useEffect(() => {
-    //const ourRequest = Axios.CancelToken.source()
     async function fetchData() {
       try {
         const response = await Axios.get("/getTask", { params: { App_Acronym: App_Acronym }, withCredentials: true })
@@ -63,13 +44,9 @@ function KBoard() {
       }
     }
     fetchData()
-    // return () => {
-    //   ourRequest.cancel()
-    // }
   }, [])
 
   useEffect(() => {
-    //const ourRequest = Axios.CancelToken.source()
     async function fetchPlan() {
       try {
         const response = await Axios.get("/getSpecificPlan", { params: { App_Acronym: App_Acronym }, withCredentials: true })
@@ -82,9 +59,6 @@ function KBoard() {
       }
     }
     fetchPlan()
-    // return () => {
-    //   ourRequest.cancel()
-    // }
   }, [])
 
   const board = {
@@ -118,7 +92,7 @@ function KBoard() {
   }
 
   function sortBoard(boardArray) {
-    console.log(boardArray)
+    //console.log(boardArray)
 
     let boardData = boardArray
 
@@ -139,8 +113,7 @@ function KBoard() {
     let doneCardData = []
     let closeCardData = []
 
-    console.log(openTasksArray)
-    //openTasksArray.map(e, i)
+    //console.log(openTasksArray)
     openTasksArray.map((e, i) => {
       let openTask = {
         id: e.Task_id,
@@ -222,7 +195,7 @@ function KBoard() {
     board.columns[3]["cards"] = doneCardData
     board.columns[4]["cards"] = closeCardData
     setBoard(board)
-    console.log(board)
+    //console.log(board)
   }
 
   const [controlledBoard, setBoard] = useState(board)
@@ -234,13 +207,16 @@ function KBoard() {
     let destinationID = destination.toColumnId
     let direction = sourceID - destinationID
 
+    console.log(controlledBoard)
+    console.log(updatedBoard)
+    console.log(_card.id)
+
     if (direction === -1) {
-      console.log("negative")
       try {
-        const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username"), sourceID }, { params: { App_Acronym: App_Acronym }, withCredentials: true })
-        console.log(response.data)
+        const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username"), Task_id: _card.id, sourceID }, { params: { App_Acronym: App_Acronym }, withCredentials: true })
+        //console.log(response.data)
         if (response.data !== false) {
-          console.log(response.data)
+          //console.log(response.data)
 
           setBoard(updatedBoard)
         }
@@ -251,7 +227,7 @@ function KBoard() {
     } else {
       console.log("positive")
       try {
-        const response = await Axios.post("/checkGroupBack", { username: localStorage.getItem("username"), sourceID }, { params: { App_Acronym: App_Acronym }, withCredentials: true })
+        const response = await Axios.post("/checkGroupBack", { username: localStorage.getItem("username"), Task_id: _card.id, sourceID }, { params: { App_Acronym: App_Acronym }, withCredentials: true })
         if (response.data !== false) {
           console.log(response.data)
 
@@ -263,8 +239,6 @@ function KBoard() {
       }
     }
 
-    console.log(controlledBoard)
-    console.log(updatedBoard)
     //setBoard(updatedBoard)
   }
 
