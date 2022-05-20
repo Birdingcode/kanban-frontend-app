@@ -35,45 +35,34 @@ const MenuProps = {
 
 function ChangeGroup() {
   const [groupApp, setGroupApp] = useImmer([])
-  //console.log(groupApp)
+
+  const [currGroup, setCurrGroup] = useImmer([])
+  //console.log("Group App: " + groupApp)
+  console.log("Group Curr: " + currGroup)
+
   let navigate = useNavigate()
   let location = useLocation()
   const appDispatch = useContext(DispatchContext)
   const [networkStatus, setNetworkStatus] = useState("pending")
-  const [personGroup, setPersonGroup] = useState([])
 
   const handleChange = event => {
     const {
       target: { value }
     } = event
-    setPersonGroup(
+    setCurrGroup(
       // On autofill we get a stringified value.
       typeof value === "string" ? value.split(",") : value
     )
   }
   const initialState = {
-    cfmpassword: {
-      value: "",
-      hasErrors: false,
-      message: "",
-      checkCount: 0
-    },
-    password: {
-      value: "",
-      hasErrors: false,
-      message: "",
-      checkCount: 0
-    },
-
     submitCount: 0
   }
 
   function ourReducer(draft, action) {
     switch (action.type) {
       case "submitForm":
-        if (!draft.password.hasErrors && !draft.cfmpassword.hasErrors) {
-          draft.submitCount++
-        }
+        draft.submitCount++
+
         return
     }
   }
@@ -92,6 +81,32 @@ function ChangeGroup() {
       }
     }
     checkGroup()
+  }, [])
+
+  useEffect(() => {
+    async function fetchCurrGroup() {
+      try {
+        const response = await Axios.get("/getCurrGroup", { params: { username: location.state.username }, withCredentials: true })
+        //console.log(response)
+        let groupCurrArr = []
+
+        {
+          response.data.map((e, i) => {
+            let elementConcat = ""
+            elementConcat += e.appAcronym
+            elementConcat += " - "
+            elementConcat += e.role
+            groupCurrArr.push(elementConcat)
+          })
+        }
+
+        setCurrGroup(groupCurrArr)
+      } catch (e) {
+        console.log("There was a problem.")
+        console.log(e)
+      }
+    }
+    fetchCurrGroup()
   }, [])
 
   useEffect(() => {
@@ -121,11 +136,24 @@ function ChangeGroup() {
     fetchData()
   }, [])
 
+  useEffect(() => {
+    if (state.submitCount) {
+      async function fetchResults() {
+        try {
+          const response = await Axios.post("/editGroup", { username: location.state.username, role: currGroup }, { withCredentials: true })
+          if (response.data) {
+            navigate("/userManagement")
+          }
+        } catch (e) {
+          console.log(e.response)
+        }
+      }
+      fetchResults()
+    }
+  }, [state.submitCount])
+
   function handleSubmit(e) {
     e.preventDefault()
-
-    //dispatch({ type: "passwordImmediately", value: state.password.value })
-    //dispatch({ type: "passwordAfterDelay", value: state.password.value, noRequest: true })
     dispatch({ type: "submitForm" })
   }
 
@@ -141,27 +169,12 @@ function ChangeGroup() {
               <input style={{ backgroundColor: "#ccc" }} value={location.state.username} className="form__input" type="text" id="firstName" placeholder="Username" autoComplete="off" readOnly />
             </div>
             <div>
-              {/* <Autocomplete
-                multiple
-                id="checkboxes-tags-demo"
-                options={groupApp}
-                disableCloseOnSelect
-                getOptionLabel={option => groupApp.toString()}
-                renderOption={(props, option, { selected }) => (
-                  <li {...props}>
-                    <Checkbox icon={icon} checkedIcon={checkedIcon} style={{ marginRight: 8 }} checked={selected} />
-                    {option}
-                  </li>
-                )}
-                style={{ width: 500 }}
-                renderInput={params => <TextField {...params} label="Checkboxes" placeholder="Favorites" />}
-              /> */}
               <FormControl sx={{ m: 0, width: 381 }}>
                 <InputLabel id="demo-multiple-checkbox-label">Group</InputLabel>
-                <Select labelId="demo-multiple-checkbox-label" id="demo-multiple-checkbox" multiple value={personGroup} onChange={handleChange} input={<OutlinedInput label="Tag" />} renderValue={selected => selected.join(", ")} MenuProps={MenuProps}>
+                <Select labelId="demo-multiple-checkbox-label" id="demo-multiple-checkbox" multiple value={currGroup} onChange={handleChange} input={<OutlinedInput label="Tag" />} renderValue={selected => selected.join(", ")} MenuProps={MenuProps}>
                   {groupApp.map(group => (
                     <MenuItem key={group} value={group}>
-                      <Checkbox checked={personGroup.indexOf(group) > -1} />
+                      <Checkbox checked={currGroup.indexOf(group) > -1} />
                       <ListItemText primary={group} />
                     </MenuItem>
                   ))}

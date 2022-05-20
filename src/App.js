@@ -83,7 +83,7 @@ export default function App() {
             <Route path="/project/:App_Acronym" element={state.loggedIn ? <KBoard /> : <CenterGuest />} />
             <Route path="/project/edit/:App_Acronym" element={state.loggedIn ? <EditApp /> : <CenterGuest />} />
             <Route path="/project/:App_Acronym/editPlan/:Plan_name" element={state.loggedIn ? <EditPlan /> : <CenterGuest />} />
-            <Route path="/createTask" element={state.loggedIn ? <CreateTask /> : <CenterGuest />} />
+            <Route path="/project/:App_Acronym/createTask" element={state.loggedIn ? <CreateTask /> : <CenterGuest />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

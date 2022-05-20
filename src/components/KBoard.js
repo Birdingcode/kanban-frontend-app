@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import Axios from "axios"
 import Page from "./Page"
+import TaskModal from "./TaskModal"
+import { Modal, Button } from "rsuite"
 import Board, { moveCard, renderCard } from "@asseinfo/react-kanban"
 import "@asseinfo/react-kanban/dist/styles.css"
+import "rsuite/dist/rsuite.min.css"
 
 //mui
 import { styled } from "@mui/material/styles"
@@ -23,11 +26,20 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 
 function KBoard() {
   let navigate = useNavigate()
-
   const { App_Acronym } = useParams()
+  const [success, setSuccess] = useState()
   const [plan, setPlan] = useState([])
   const cards = []
   const [networkStatus, setNetworkStatus] = useState("pending")
+  const [state, setState] = useState()
+
+  //rsuite
+  const [open, setOpen] = useState(false)
+  const handleOpen = id => {
+    setState(id)
+    setOpen(true)
+  }
+  const handleClose = () => setOpen(false)
 
   useEffect(() => {
     async function fetchData() {
@@ -242,8 +254,27 @@ function KBoard() {
     //setBoard(updatedBoard)
   }
 
+  useEffect(() => {
+    async function fetchCreate() {
+      try {
+        const response = await Axios.post("/checkCreate", { username: localStorage.getItem("username") }, { params: { App_Acronym: App_Acronym }, withCredentials: true })
+
+        console.log(response.data)
+        setSuccess(response.data)
+      } catch (e) {
+        console.log("There was a problem.")
+        console.log(e)
+      }
+    }
+    fetchCreate()
+  }, [])
+
   function changePlan(App_Acronym, Plan_name) {
     navigate(`/project/${App_Acronym}/editPlan/${Plan_name}`)
+  }
+
+  function createTask(App_Acronym) {
+    navigate(`/project/${App_Acronym}/createTask`)
   }
 
   if (networkStatus === "resolved") {
@@ -300,11 +331,17 @@ function KBoard() {
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
             <Board
-              renderCard={({ title, plan, notes }) => (
+              renderCard={({ title, id }) => (
                 <div>
                   <h4>{title}</h4>
-                  <p>{plan}</p>
-                  <button>Add Note</button>
+                  <Button
+                    appearance="primary"
+                    onClick={() => {
+                      handleOpen(id)
+                    }}
+                  >
+                    View Task
+                  </Button>
                 </div>
               )}
               onCardDragEnd={handleCardMove}
@@ -313,6 +350,29 @@ function KBoard() {
               {controlledBoard}
             </Board>
           </div>
+          <div style={{ position: "absolute", right: 20, top: 70, backgroundColor: "#2c3e50" }}>
+            {success ? (
+              <button
+                style={{ padding: 20, margin: 20 }}
+                onClick={() => {
+                  createTask(App_Acronym)
+                }}
+              >
+                Create Task
+              </button>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="modal-container">
+          <Modal overflow={true} size={"lg"} open={open} onClose={handleClose}>
+            <TaskModal taskid={state} />
+            <Modal.Footer>
+              <Button onClick={handleClose} appearance="subtle">
+                Cancel
+              </Button>
+            </Modal.Footer>
+          </Modal>
         </div>
       </Page>
     )

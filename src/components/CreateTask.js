@@ -3,17 +3,13 @@ import Page from "./Page"
 import DispatchContext from "../DispatchContext"
 import { useImmerReducer, useImmer } from "use-immer"
 import Axios from "axios"
-import { useNavigate } from "react-router-dom"
-import { CSSTransition } from "react-transition-group"
+import { useNavigate, useParams } from "react-router-dom"
 
 function CreateTask() {
-  // States htmlFor registration
+  const { App_Acronym } = useParams()
   let navigate = useNavigate()
   const [plan, setPlan] = useImmer([])
   const [user, setUser] = useImmer([])
-  const [app, setApp] = useImmer([])
-  const nodeRef = React.useRef(null)
-  const appDispatch = useContext(DispatchContext)
 
   const initialState = {
     Task_name: {
@@ -23,12 +19,6 @@ function CreateTask() {
       checkCount: 0
     },
     Plan_name: {
-      value: "",
-      hasErrors: false,
-      message: "",
-      checkCount: 0
-    },
-    App_Acronym: {
       value: "",
       hasErrors: false,
       message: "",
@@ -140,8 +130,7 @@ function CreateTask() {
         }
         return
       case "submitForm":
-        console.log(draft.Task_createDate.hasErrors)
-        if (!draft.Task_name.hasErrors && !draft.Plan_name.hasErrors && !draft.App_Acronym.hasErrors && !draft.Task_description.hasErrors && !draft.Task_notes.hasErrors && !draft.Task_owner.hasErrors && !draft.Task_createDate.hasErrors) {
+        if (!draft.Task_name.hasErrors && !draft.Plan_name.hasErrors && !draft.Task_description.hasErrors && !draft.Task_notes.hasErrors && !draft.Task_owner.hasErrors && !draft.Task_createDate.hasErrors) {
           draft.submitCount++
         }
         return
@@ -150,40 +139,21 @@ function CreateTask() {
 
   const [state, dispatch] = useImmerReducer(ourReducer, initialState)
   const date = new Date().toISOString().split("T")[0]
-  useEffect(() => {
-    async function checkGroup() {
-      try {
-        const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username") }, { withCredentials: true })
-        console.log(response.data)
-        if (response.data !== true) {
-          navigate("/")
-        }
-        //setState(response.data)
-      } catch (e) {
-        console.log(e)
-      }
-    }
-    checkGroup()
-  }, [])
-
-  useEffect(() => {
-    //const ourRequest = Axios.CancelToken.source()
-    async function fetchData() {
-      try {
-        const response = await Axios.get("/getApp", { withCredentials: true })
-        console.log(response.data)
-        setApp(response.data)
-        //setProfileData(response.data)
-      } catch (e) {
-        console.log("There was a problem.")
-        console.log(e)
-      }
-    }
-    fetchData()
-    // return () => {
-    //   ourRequest.cancel()
-    // }
-  }, [])
+  // useEffect(() => {
+  //   async function checkGroup() {
+  //     try {
+  //       const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username") }, { withCredentials: true })
+  //       console.log(response.data)
+  //       if (response.data !== true) {
+  //         navigate("/")
+  //       }
+  //       //setState(response.data)
+  //     } catch (e) {
+  //       console.log(e)
+  //     }
+  //   }
+  //   checkGroup()
+  // }, [])
 
   useEffect(() => {
     async function fetchPlan() {
@@ -198,39 +168,30 @@ function CreateTask() {
       }
     }
     fetchPlan()
-    // return () => {
-    //   ourRequest.cancel()
-    // }
   }, [])
 
   useEffect(() => {
-    //const ourRequest = Axios.CancelToken.source()
     async function fetchUsers() {
       try {
         const response = await Axios.get("/userManagement", { withCredentials: true })
         console.log(response.data)
         setUser(response.data)
-        //setProfileData(response.data)
       } catch (e) {
         console.log("There was a problem.")
         console.log(e)
       }
     }
     fetchUsers()
-    // return () => {
-    //   ourRequest.cancel()
-    // }
   }, [])
 
   useEffect(() => {
     if (state.submitCount) {
       async function fetchResults() {
         try {
-          const response = await Axios.post("/createTask", { Task_name: state.Task_name.value, Plan_name: state.Plan_name.value, App_Acronym: state.App_Acronym.value, Task_description: state.Task_description.value, Task_notes: state.Task_notes.value, Task_creator: localStorage.getItem("username"), Task_owner: state.Task_owner.value, Task_createDate: date }, { withCredentials: true })
+          const response = await Axios.post("/createTask", { Task_name: state.Task_name.value, Plan_name: state.Plan_name.value, Task_description: state.Task_description.value, Task_notes: state.Task_notes.value, Task_creator: localStorage.getItem("username"), Task_owner: state.Task_owner.value, Task_createDate: date }, { params: { App_Acronym: App_Acronym }, withCredentials: true })
 
           console.log(response)
-          //appDispatch({ type: "login", data: response.data })
-          navigate("/")
+          navigate(`/project/${App_Acronym}`)
         } catch (e) {
           console.log(e.response)
         }
@@ -244,11 +205,9 @@ function CreateTask() {
     e.preventDefault()
     dispatch({ type: "taskImmediately", value: state.Task_name.value })
     dispatch({ type: "planImmediately", value: state.Plan_name.value })
-    dispatch({ type: "acronymImmediately", value: state.App_Acronym.value })
     dispatch({ type: "taskDescImmediately", value: state.Task_description.value })
     dispatch({ type: "taskNotesImmediately", value: state.Task_notes.value })
     dispatch({ type: "taskOwnerImmediately", value: state.Task_owner.value })
-    //dispatch({ type: "createDateImmediately", value: state.Task_createDate.value })
     dispatch({ type: "submitForm" })
   }
 
@@ -271,6 +230,7 @@ function CreateTask() {
                 <option value="" disabled>
                   Select Plan ...
                 </option>
+                <option>N/A</option>
                 {plan.map((item, i) => (
                   <option key={item.Plan_name} value={item.Plan_name}>
                     {item.Plan_name}
@@ -282,16 +242,7 @@ function CreateTask() {
               <label className="form__label" htmlFor="appAcronym">
                 App Acronym{" "}
               </label>
-              <select defaultValue="" onChange={e => dispatch({ type: "acronymImmediately", value: e.target.value })}>
-                <option value="" disabled>
-                  Select App ...
-                </option>
-                {app.map((item, i) => (
-                  <option key={item.App_Acronym} value={item.App_Acronym}>
-                    {item.App_Acronym}
-                  </option>
-                ))}
-              </select>
+              <input style={{ backgroundColor: "#ccc" }} value={App_Acronym} type="taskCreator" id="appAcronym" className="form__input" placeholder="App Acronym" autoComplete="off" readOnly />
             </div>
             <div className="taskDesc">
               <label className="form__label" htmlFor="taskDesc">
@@ -319,6 +270,7 @@ function CreateTask() {
                 <option value="" disabled>
                   Select Owner ...
                 </option>
+                <option>N/A</option>
                 {user.map((item, i) => (
                   <option key={item.username} value={item.username}>
                     {item.username}
@@ -335,7 +287,7 @@ function CreateTask() {
           </div>
           <div className="footer">
             <button type="submit" className="btn">
-              Create New Application
+              Create New Task
             </button>
           </div>
         </div>

@@ -42,13 +42,8 @@ function NavBar() {
             {groupAuth === "authAdmin" ? <Nav.Link href="/UserManagement">User Management</Nav.Link> : null}
             {groupAuth === "authPM" || groupAuth === "authAdmin" ? <Nav.Link href="/createApp">Create App</Nav.Link> : null}
             {groupAuth === "authPM" || groupAuth === "authAdmin" ? <Nav.Link href="/createPlan">Create Plan</Nav.Link> : null}
-            <Nav.Link href="/createTask">Create Task</Nav.Link>
             <NavDropdown title="Dropdown" id="collasible-nav-dropdown">
               <NavDropdown.Item href="/ChangePersonalPw">Change Password</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
             </NavDropdown>
           </Nav>
 
