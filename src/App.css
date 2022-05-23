@@ -136,6 +136,23 @@ th {
   }
 }
 
+.trail {
+  background-color: blue;
+  border-radius: 5px;
+  width: 550px;
+  top: 20px;
+  margin: 20px auto;
+  padding: 20px;
+}
+.trail-body {
+  text-align: left;
+  padding: 20px 10px;
+}
+
+.trail-body > * {
+  padding: 5px;
+}
+
 .form {
   background-color: white;
   border-radius: 5px;
@@ -166,6 +183,29 @@ th {
   text-align: center;
 }
 
+.form-modal {
+  background-color: white;
+  width: 464px;
+  padding: 10px;
+}
+
+.form-body-modal {
+  text-align: left;
+  padding: 49.5px 10px;
+}
+
+.form-body-modal > * {
+  padding: 4px;
+}
+
+.form__label-modal {
+  width: 30%;
+}
+
+.form_input-modal {
+  width: 60%;
+}
+
 .rs-modal-header {
   float: left;
   height: 50px;
@@ -185,7 +225,6 @@ th {
 .modalContainer .left {
   width: 50%;
   height: auto;
-  background: red;
   float: left;
 }
 
