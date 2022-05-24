@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react"
+import React, { useEffect, useContext, useState } from "react"
 import Page from "./Page"
 import { useImmer } from "use-immer"
 import DispatchContext from "../DispatchContext"
@@ -12,6 +12,7 @@ function CreateApp() {
   let navigate = useNavigate()
   const nodeRef = React.useRef(null)
   const appDispatch = useContext(DispatchContext)
+  const [networkStatus, setNetworkStatus] = useState("pending")
 
   const initialState = {
     App_Acronym: {
@@ -21,6 +22,12 @@ function CreateApp() {
       checkCount: 0
     },
     Plan_name: {
+      value: "",
+      hasErrors: false,
+      message: "",
+      checkCount: 0
+    },
+    Plan_Description: {
       value: "",
       hasErrors: false,
       message: "",
@@ -65,6 +72,17 @@ function CreateApp() {
           draft.App_Acronym.checkCount++
         }
         return
+      case "planDescImmediately":
+        draft.Plan_Description.hasErrors = false
+        draft.Plan_Description.value = action.value
+        if (draft.Plan_Description.value.length <= 0) {
+          draft.Plan_Description.hasErrors = true
+          draft.Plan_Description.message = "Please enter a description"
+        }
+        if (!draft.Plan_Description.hasErrors) {
+          draft.Plan_Description.checkCount++
+        }
+        return
       case "startDateImmediately":
         draft.Plan_startDate.hasErrors = false
         draft.Plan_startDate.value = action.value
@@ -88,7 +106,7 @@ function CreateApp() {
         }
         return
       case "submitForm":
-        if (!draft.App_Acronym.hasErrors && !draft.Plan_name.hasErrors && !draft.Plan_startDate.hasErrors && !draft.Plan_endDate.hasErrors) {
+        if (!draft.App_Acronym.hasErrors && !draft.Plan_name.hasErrors && !draft.Plan_startDate.hasErrors && !draft.Plan_Description.hasErrors && !draft.Plan_endDate.hasErrors) {
           draft.submitCount++
         }
         return
@@ -132,7 +150,7 @@ function CreateApp() {
     if (state.submitCount) {
       async function fetchResults() {
         try {
-          const response = await Axios.post("/createPlan", { Plan_name: state.Plan_name.value, App_Acronym: state.App_Acronym.value, Plan_startDate: state.Plan_startDate.value, Plan_endDate: state.Plan_endDate.value }, { withCredentials: true })
+          const response = await Axios.post("/createPlan", { Plan_name: state.Plan_name.value, App_Acronym: state.App_Acronym.value, Plan_Description: state.Plan_Description.value, Plan_startDate: state.Plan_startDate.value, Plan_endDate: state.Plan_endDate.value }, { withCredentials: true })
 
           console.log(response)
           navigate("/")
@@ -148,61 +166,71 @@ function CreateApp() {
     e.preventDefault()
     dispatch({ type: "planImmediately", value: state.Plan_name.value })
     dispatch({ type: "acronymImmediately", value: state.App_Acronym.value })
+    dispatch({ type: "planDescImmediately", value: state.Plan_Description.value })
     dispatch({ type: "startDateImmediately", value: state.Plan_startDate.value })
     dispatch({ type: "endDateImmediately", value: state.Plan_endDate.value })
     dispatch({ type: "submitForm" })
   }
 
-  return (
-    <Page title="Creating New Plan">
-      <form onSubmit={handleSubmit}>
-        <div className="form">
-          <div className="form-body">
-            <div className="planName">
-              <label className="form__label" htmlFor="planName">
-                Plan Name{" "}
-              </label>
-              <input onChange={e => dispatch({ type: "planImmediately", value: e.target.value })} className="form__input" type="text" id="planName" placeholder="Plan Name" autoComplete="off" />
-            </div>
+  if (networkStatus === "resolved") {
+    return (
+      <Page title="Creating New Plan">
+        <form onSubmit={handleSubmit}>
+          <div className="form">
+            <div className="form-body">
+              <div className="planName">
+                <label className="form__label" htmlFor="planName">
+                  Plan Name{" "}
+                </label>
+                <input onChange={e => dispatch({ type: "planImmediately", value: e.target.value })} className="form__input" type="text" id="planName" placeholder="Plan Name" autoComplete="off" />
+              </div>
 
-            <div className="appAcronym">
-              <label className="form__label" htmlFor="appAcronym">
-                App Acronym{" "}
-              </label>
-              <select defaultValue="" onChange={e => dispatch({ type: "acronymImmediately", value: e.target.value })}>
-                <option value="" disabled>
-                  Select App ...
-                </option>
-
-                {app.map((item, i) => (
-                  <option key={item.App_Acronym} value={item.App_Acronym}>
-                    {item.App_Acronym}
+              <div className="appAcronym">
+                <label className="form__label" htmlFor="appAcronym">
+                  App Acronym{" "}
+                </label>
+                <select defaultValue="" onChange={e => dispatch({ type: "acronymImmediately", value: e.target.value })}>
+                  <option value="" disabled>
+                    Select App ...
                   </option>
-                ))}
-              </select>
-            </div>
 
-            <div className="startDate">
-              <label className="form__label" htmlFor="startDate">
-                Start Date{" "}
-              </label>
-              <input onChange={e => dispatch({ type: "startDateImmediately", value: e.target.value })} className="form__input" type="date" id="startDate" placeholder="Start Date" autoComplete="off" />
-            </div>
-            <div className="endDate">
-              <label className="form__label" htmlFor="endDate">
-                End Date{" "}
-              </label>
-              <input onChange={e => dispatch({ type: "endDateImmediately", value: e.target.value })} className="form__input" type="date" id="endDate" placeholder="End Date" autoComplete="off" />
-            </div>
-            <div className="footer">
-              <button type="submit" className="btn">
-                Create New Plan
-              </button>
+                  {app.map((item, i) => (
+                    <option key={item.App_Acronym} value={item.App_Acronym}>
+                      {item.App_Acronym}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="planDesc">
+                <label className="form__label" htmlFor="planDesc">
+                  Plan Description{" "}
+                </label>
+                <input onChange={e => dispatch({ type: "planDescImmediately", value: e.target.value })} type="text" id="planDesc" className="form__input" placeholder="Plan Description" autoComplete="off" />
+              </div>
+              <div className="startDate">
+                <label className="form__label" htmlFor="startDate">
+                  Start Date{" "}
+                </label>
+                <input onChange={e => dispatch({ type: "startDateImmediately", value: e.target.value })} className="form__input" type="date" id="startDate" placeholder="Start Date" autoComplete="off" />
+              </div>
+              <div className="endDate">
+                <label className="form__label" htmlFor="endDate">
+                  End Date{" "}
+                </label>
+                <input onChange={e => dispatch({ type: "endDateImmediately", value: e.target.value })} className="form__input" type="date" id="endDate" placeholder="End Date" autoComplete="off" />
+              </div>
+              <div className="footer">
+                <button type="submit" className="btn">
+                  Create New Plan
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </form>
-    </Page>
-  )
+        </form>
+      </Page>
+    )
+  } else {
+    return null
+  }
 }
 export default CreateApp

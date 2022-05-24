@@ -1,4 +1,4 @@
-import { Modal, Button } from "rsuite"
+import { Modal, Table } from "rsuite"
 import React, { useState, useEffect, useContext } from "react"
 import "rsuite/dist/rsuite.min.css"
 import Axios from "axios"
@@ -147,15 +147,16 @@ function TaskModal(props) {
     }
     fetchUsers()
   }, [])
-  //console.log(parseNotes)
+  console.log(parseNotes)
   useEffect(() => {
     async function fetchData() {
       try {
         const response = await Axios.get("/getSpecificTask", { params: { Task_id: props.taskid }, withCredentials: true })
         const date = new Date(response.data[0].Task_createDate).toISOString().split("T")[0]
-        console.log(response.data)
+        //console.log(response.data)
         setSpecificTask(response.data)
-        //setParseNotes(JSON.parse(response.data.Task_notes))
+
+        setParseNotes(JSON.parse(response.data[0].Task_notes))
         dispatch({ type: "acronymImmediately", value: response.data[0].App_Acronym })
         dispatch({ type: "createDateImmediately", value: date })
         setNetworkStatus("resolved")
@@ -202,9 +203,9 @@ function TaskModal(props) {
   if (networkStatus === "resolved") {
     return (
       <div className="modal-container">
-        <Modal.Header>
+        {/* <Modal.Header>
           <Modal.Title>Modal Title</Modal.Title>
-        </Modal.Header>
+        </Modal.Header> */}
         <Modal.Body>
           <div className="modalContainer">
             <div className="left">
@@ -297,7 +298,31 @@ function TaskModal(props) {
             </div>
 
             <div className="right">
-              <div className="trail"></div>
+              {" "}
+              <Table
+                virtualized
+                wordWrap
+                height={320}
+                data={parseNotes}
+                onRowClick={data => {
+                  console.log(data)
+                }}
+              >
+                <Table.Column flexGrow={1}>
+                  <Table.HeaderCell>User</Table.HeaderCell>
+                  <Table.Cell dataKey="username" />
+                </Table.Column>
+
+                <Table.Column flexGrow={2}>
+                  <Table.HeaderCell>Notes</Table.HeaderCell>
+                  <Table.Cell dataKey="Task_notes" />
+                </Table.Column>
+
+                <Table.Column flexGrow={3}>
+                  <Table.HeaderCell>Timestamp</Table.HeaderCell>
+                  <Table.Cell dataKey="currentDateTime" />
+                </Table.Column>
+              </Table>
             </div>
           </div>
         </Modal.Body>

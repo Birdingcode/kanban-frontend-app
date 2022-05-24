@@ -139,21 +139,21 @@ function CreateTask() {
 
   const [state, dispatch] = useImmerReducer(ourReducer, initialState)
   const date = new Date().toISOString().split("T")[0]
-  // useEffect(() => {
-  //   async function checkGroup() {
-  //     try {
-  //       const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username") }, { withCredentials: true })
-  //       console.log(response.data)
-  //       if (response.data !== true) {
-  //         navigate("/")
-  //       }
-  //       //setState(response.data)
-  //     } catch (e) {
-  //       console.log(e)
-  //     }
-  //   }
-  //   checkGroup()
-  // }, [])
+
+  useEffect(() => {
+    async function fetchCreate() {
+      try {
+        const response = await Axios.post("/checkCreate", { username: localStorage.getItem("username") }, { params: { App_Acronym: App_Acronym }, withCredentials: true })
+        if (!response.data) {
+          navigate("/")
+        }
+      } catch (e) {
+        console.log("There was a problem.")
+        console.log(e)
+      }
+    }
+    fetchCreate()
+  }, [])
 
   useEffect(() => {
     async function fetchPlan() {
@@ -188,7 +188,7 @@ function CreateTask() {
     if (state.submitCount) {
       async function fetchResults() {
         try {
-          const response = await Axios.post("/createTask", { Task_name: state.Task_name.value, Plan_name: state.Plan_name.value, Task_description: state.Task_description.value, Task_notes: state.Task_notes.value, Task_creator: localStorage.getItem("username"), Task_owner: state.Task_owner.value, Task_createDate: date }, { params: { App_Acronym: App_Acronym }, withCredentials: true })
+          const response = await Axios.post("/createTask", { username: localStorage.getItem("username"), Task_name: state.Task_name.value, Plan_name: state.Plan_name.value, Task_description: state.Task_description.value, Task_notes: state.Task_notes.value, Task_creator: localStorage.getItem("username"), Task_owner: state.Task_owner.value, Task_createDate: date }, { params: { App_Acronym: App_Acronym }, withCredentials: true })
 
           console.log(response)
           navigate(`/project/${App_Acronym}`)

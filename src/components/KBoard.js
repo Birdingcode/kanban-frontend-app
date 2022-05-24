@@ -15,6 +15,7 @@ import Paper from "@mui/material/Paper"
 import Grid from "@mui/material/Grid"
 import Card from "@mui/material/Card"
 import { CardContent, CardHeader } from "@mui/material"
+import { blue, pink } from "@mui/material/colors"
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -236,7 +237,7 @@ function KBoard() {
         console.log("There was a problem.")
         console.log(e)
       }
-    } else {
+    } else if (direction === 1) {
       console.log("positive")
       try {
         const response = await Axios.post("/checkGroupBack", { username: localStorage.getItem("username"), Task_id: _card.id, sourceID }, { params: { App_Acronym: App_Acronym }, withCredentials: true })
@@ -280,10 +281,10 @@ function KBoard() {
   if (networkStatus === "resolved") {
     return (
       <Page title="Project">
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ position: "absolute", left: 0, top: 58 }}>
+        <div>
+          <div style={{ position: "absolute", left: 0, top: 58, width: "20%" }}>
             {plan.map((item, i) => (
-              <Box sx={{ flexGrow: 1, overflow: "hidden", px: 2 }}>
+              <Box sx={{ flexGrow: 1, overflow: "hidden", px: 1 }}>
                 <StyledPaper
                   sx={{
                     my: 1,
@@ -294,7 +295,7 @@ function KBoard() {
                   <Grid container wrap="nowrap" spacing={1}>
                     <Grid item>
                       <Card>
-                        <CardHeader title={item.Plan_name} />
+                        <CardHeader title={item.Plan_name} subheader={item.Plan_Description} />
                         <CardContent>
                           <Grid container spacing={2}>
                             <Grid item xs={6} sm={6}>
@@ -304,7 +305,7 @@ function KBoard() {
                                   <label>{new Date(item.Plan_startDate).toISOString().split("T")[0]}</label>
                                   <button
                                     onClick={() => {
-                                      changePlan(item.App_Acronym, item.Plan_name)
+                                      changePlan(item.App_Acronym, item.Plan_name, item.Plan_Description)
                                     }}
                                   >
                                     Edit Plan
@@ -329,13 +330,22 @@ function KBoard() {
               </Box>
             ))}
           </div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ marginLeft: "20%" }}>
             <Board
-              renderCard={({ title, id }) => (
-                <div>
-                  <h4>{title}</h4>
+              renderCard={({ title, id, description, owner }) => (
+                <div style={{ marginTop: 10, width: "calc(14vw - 30px)", backgroundColor: "#969FA7", borderRadius: 5 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between" }}>
+                    <h4 style={{ color: "white", marginRight: 2 }}>{title}</h4>
+                    <h5>{owner || "-"}</h5>
+                  </div>
+                  <div>
+                    <label>Description: </label>
+                    <div>
+                      <p style={{ backgroundColor: "#BAC1C5", borderRadius: 5 }}>{description}</p>
+                    </div>
+                  </div>
                   <Button
-                    appearance="primary"
+                    style={{ backgroundColor: "#2c3e50", color: "white" }}
                     onClick={() => {
                       handleOpen(id)
                     }}
@@ -350,18 +360,6 @@ function KBoard() {
               {controlledBoard}
             </Board>
           </div>
-          <div style={{ position: "absolute", right: 20, top: 70, backgroundColor: "#2c3e50" }}>
-            {success ? (
-              <button
-                style={{ padding: 20, margin: 20 }}
-                onClick={() => {
-                  createTask(App_Acronym)
-                }}
-              >
-                Create Task
-              </button>
-            ) : null}
-          </div>
         </div>
 
         <div className="modal-container">
@@ -373,6 +371,18 @@ function KBoard() {
               </Button>
             </Modal.Footer>
           </Modal>
+        </div>
+        <div>
+          {success ? (
+            <button
+              className="createTask"
+              onClick={() => {
+                createTask(App_Acronym)
+              }}
+            >
+              Create Task
+            </button>
+          ) : null}
         </div>
       </Page>
     )

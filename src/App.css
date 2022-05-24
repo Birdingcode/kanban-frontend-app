@@ -136,23 +136,6 @@ th {
   }
 }
 
-.trail {
-  background-color: blue;
-  border-radius: 5px;
-  width: 550px;
-  top: 20px;
-  margin: 20px auto;
-  padding: 20px;
-}
-.trail-body {
-  text-align: left;
-  padding: 20px 10px;
-}
-
-.trail-body > * {
-  padding: 5px;
-}
-
 .form {
   background-color: white;
   border-radius: 5px;
@@ -186,16 +169,16 @@ th {
 .form-modal {
   background-color: white;
   width: 464px;
-  padding: 10px;
+  /* padding: 5px; */
 }
 
 .form-body-modal {
   text-align: left;
-  padding: 49.5px 10px;
+  padding: 47.5px 1px 1px;
 }
 
 .form-body-modal > * {
-  padding: 4px;
+  padding: 2px;
 }
 
 .form__label-modal {
@@ -217,7 +200,7 @@ th {
 
 .modalContainer {
   width: 100%;
-  height: 413px;
+  height: 300px;
   background: grey;
   float: left;
 }
@@ -231,7 +214,6 @@ th {
 .modalContainer .right {
   width: 50%;
   height: auto;
-  background: green;
   float: left;
 }
 
@@ -239,4 +221,20 @@ th {
   width: 100%;
   float: left;
   height: 50px;
+}
+
+.createTask {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: orange;
+  color: white;
+  cursor: pointer;
+  border-radius: 100px;
+  border: none;
+  box-shadow: 0 5px 10px #ccc;
+}
+
+.react-kanban-column {
+  width: 14vw;
 }
