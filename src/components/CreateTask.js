@@ -19,7 +19,7 @@ function CreateTask() {
       checkCount: 0
     },
     Plan_name: {
-      value: "",
+      value: null,
       hasErrors: false,
       message: "",
       checkCount: 0
@@ -31,12 +31,6 @@ function CreateTask() {
       checkCount: 0
     },
     Task_notes: {
-      value: "",
-      hasErrors: false,
-      message: "",
-      checkCount: 0
-    },
-    Task_owner: {
       value: "",
       hasErrors: false,
       message: "",
@@ -63,10 +57,12 @@ function CreateTask() {
         if (!draft.Task_name.hasErrors) {
           draft.Task_name.checkCount++
         }
+        return
       case "planImmediately":
         draft.Plan_name.hasErrors = false
         draft.Plan_name.value = action.value
         if (!draft.Plan_name) {
+          console.log("planImmediately")
           draft.Plan_name.hasErrors = true
           draft.Plan_name.message = "Please include a plan name"
         }
@@ -107,17 +103,6 @@ function CreateTask() {
           draft.Task_notes.checkCount++
         }
         return
-      case "taskOwnerImmediately":
-        draft.Task_owner.hasErrors = false
-        draft.Task_owner.value = action.value
-        if (!draft.Task_owner.value) {
-          draft.Task_owner.hasErrors = true
-          draft.Task_owner.message = "Please inlcude a task owner"
-        }
-        if (!draft.Task_owner.hasErrors) {
-          draft.Task_owner.checkCount++
-        }
-        return
       case "createDateImmediately":
         draft.Task_createDate.hasErrors = false
         draft.Task_createDate.value = action.value
@@ -130,7 +115,11 @@ function CreateTask() {
         }
         return
       case "submitForm":
-        if (!draft.Task_name.hasErrors && !draft.Plan_name.hasErrors && !draft.Task_description.hasErrors && !draft.Task_notes.hasErrors && !draft.Task_owner.hasErrors && !draft.Task_createDate.hasErrors) {
+        console.log("Task Name", draft.Task_name.value)
+
+        console.log("Plan Name", draft.Plan_name.value)
+        console.log(draft.Plan_name.hasErrors)
+        if (!draft.Task_name.hasErrors && !draft.Plan_name.hasErrors && !draft.Task_description.hasErrors && !draft.Task_notes.hasErrors && !draft.Task_createDate.hasErrors) {
           draft.submitCount++
         }
         return
@@ -158,7 +147,7 @@ function CreateTask() {
   useEffect(() => {
     async function fetchPlan() {
       try {
-        const response = await Axios.get("/getPlan", { withCredentials: true })
+        const response = await Axios.get("/getSpecificPlan", { params: { App_Acronym: App_Acronym }, withCredentials: true })
         console.log(response.data)
         setPlan(response.data)
         //setProfileData(response.data)
@@ -188,7 +177,7 @@ function CreateTask() {
     if (state.submitCount) {
       async function fetchResults() {
         try {
-          const response = await Axios.post("/createTask", { username: localStorage.getItem("username"), Task_name: state.Task_name.value, Plan_name: state.Plan_name.value, Task_description: state.Task_description.value, Task_notes: state.Task_notes.value, Task_creator: localStorage.getItem("username"), Task_owner: state.Task_owner.value, Task_createDate: date }, { params: { App_Acronym: App_Acronym }, withCredentials: true })
+          const response = await Axios.post("/createTask", { username: localStorage.getItem("username"), Task_name: state.Task_name.value, Plan_name: state.Plan_name.value, Task_description: state.Task_description.value, Task_notes: state.Task_notes.value, Task_creator: localStorage.getItem("username"), Task_createDate: date }, { params: { App_Acronym: App_Acronym }, withCredentials: true })
 
           console.log(response)
           navigate(`/project/${App_Acronym}`)
@@ -197,7 +186,6 @@ function CreateTask() {
         }
       }
       fetchResults()
-      //return () => ourRequest.cancel()
     }
   }, [state.submitCount])
 
@@ -207,7 +195,6 @@ function CreateTask() {
     dispatch({ type: "planImmediately", value: state.Plan_name.value })
     dispatch({ type: "taskDescImmediately", value: state.Task_description.value })
     dispatch({ type: "taskNotesImmediately", value: state.Task_notes.value })
-    dispatch({ type: "taskOwnerImmediately", value: state.Task_owner.value })
     dispatch({ type: "submitForm" })
   }
 
@@ -226,11 +213,12 @@ function CreateTask() {
               <label className="form__label" htmlFor="planName">
                 Plan Name{" "}
               </label>
-              <select defaultValue="" onChange={e => dispatch({ type: "planImmediately", value: e.target.value })}>
-                <option value="" disabled>
-                  Select Plan ...
-                </option>
-                <option>N/A</option>
+              <select
+                onChange={e => {
+                  console.log(e.target.value), dispatch({ type: "planImmediately", value: e.target.value })
+                }}
+              >
+                <option value={null}>Select Plan ...</option>
                 {plan.map((item, i) => (
                   <option key={item.Plan_name} value={item.Plan_name}>
                     {item.Plan_name}
@@ -248,7 +236,7 @@ function CreateTask() {
               <label className="form__label" htmlFor="taskDesc">
                 Task Description{" "}
               </label>
-              <input onChange={e => dispatch({ type: "taskDescImmediately", value: e.target.value })} type="text" id="taskDesc" className="form__input" placeholder="Task Description" autoComplete="off" />
+              <textarea onChange={e => dispatch({ type: "taskDescImmediately", value: e.target.value })} id="taskDesc" className="form__input" placeholder="Task Description" autoComplete="off" />
             </div>
             <div className="taskNotes">
               <label className="form__label" htmlFor="taskNotes">
@@ -261,22 +249,6 @@ function CreateTask() {
                 Task Creator{" "}
               </label>
               <input style={{ backgroundColor: "#ccc" }} value={localStorage.getItem("username")} type="taskCreator" id="taskCreator" className="form__input" placeholder="Task Creator" autoComplete="off" readOnly />
-            </div>
-            <div className="taskOwner">
-              <label className="form__label" htmlFor="taskOwner">
-                Task Owner{" "}
-              </label>
-              <select defaultValue="" onChange={e => dispatch({ type: "taskOwnerImmediately", value: e.target.value })}>
-                <option value="" disabled>
-                  Select Owner ...
-                </option>
-                <option>N/A</option>
-                {user.map((item, i) => (
-                  <option key={item.username} value={item.username}>
-                    {item.username}
-                  </option>
-                ))}
-              </select>
             </div>
             <div className="createDate">
               <label className="form__label" htmlFor="createDate">

@@ -178,7 +178,7 @@ th {
 }
 
 .form-body-modal > * {
-  padding: 2px;
+  padding: 2.4px;
 }
 
 .form__label-modal {
@@ -200,8 +200,8 @@ th {
 
 .modalContainer {
   width: 100%;
-  height: 300px;
-  background: grey;
+  height: 350px;
+  /* background: grey; */
   float: left;
 }
 

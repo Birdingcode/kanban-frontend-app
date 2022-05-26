@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react"
 import Page from "./Page"
 import DispatchContext from "../DispatchContext"
-import { useImmerReducer } from "use-immer"
+import { useImmerReducer, useImmer } from "use-immer"
 import Axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { CSSTransition } from "react-transition-group"
@@ -11,6 +11,8 @@ function CreateApp() {
   const nodeRef = React.useRef(null)
   const appDispatch = useContext(DispatchContext)
   const [networkStatus, setNetworkStatus] = useState("pending")
+  const [groupApp, setGroupApp] = useImmer([])
+
   const initialState = {
     App_Acronym: {
       value: "",
@@ -190,13 +192,37 @@ function CreateApp() {
   }, [])
 
   useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await Axios.get("/getGroupApp", { withCredentials: true })
+
+        let groupAppArr = []
+
+        {
+          response.data.map((e, i) => {
+            let elementConcat = ""
+            elementConcat += e.role
+            groupAppArr.push(elementConcat)
+          })
+        }
+
+        setGroupApp(groupAppArr)
+        setNetworkStatus("resolved")
+      } catch (e) {
+        console.log("There was a problem.")
+        console.log(e)
+      }
+    }
+    fetchData()
+  }, [])
+
+  useEffect(() => {
     if (state.submitCount) {
       async function fetchResults() {
         try {
           const response = await Axios.post("/createApp", { App_Acronym: state.App_Acronym.value, App_Description: state.App_Description.value, App_startDate: state.App_startDate.value, App_endDate: state.App_endDate.value, App_permit_Open: state.App_permit_Open.value, App_permit_toDoList: state.App_permit_toDoList.value, App_permit_Doing: state.App_permit_Doing.value, App_permit_Done: state.App_permit_Done.value, App_permit_Create: state.App_permit_Create.value }, { withCredentials: true })
 
           console.log(response)
-          navigate("/")
         } catch (e) {
           console.log(e.response)
         }
@@ -218,6 +244,11 @@ function CreateApp() {
     dispatch({ type: "permitCreate", value: state.App_permit_Create.value })
     dispatch({ type: "submitForm" })
   }
+
+  function refreshPage() {
+    window.location.reload()
+  }
+
   if (networkStatus === "resolved") {
     return (
       <Page title="Creating New Application">
@@ -259,10 +290,11 @@ function CreateApp() {
                   <option value="" disabled>
                     Grant permission ...
                   </option>
-                  <option value="Superadmin">Superadmin</option>
-                  <option value="Member">Member</option>
-                  <option value="Lead">Lead</option>
-                  <option value="PM">PM</option>
+                  {groupApp.map((item, i) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="permitToDo">
@@ -273,10 +305,11 @@ function CreateApp() {
                   <option value="" disabled>
                     Grant permission ...
                   </option>
-                  <option value="Superadmin">Superadmin</option>
-                  <option value="Member">Member</option>
-                  <option value="Lead">Lead</option>
-                  <option value="PM">PM</option>
+                  {groupApp.map((item, i) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="permitDoing">
@@ -287,10 +320,11 @@ function CreateApp() {
                   <option value="" disabled>
                     Grant permission ...
                   </option>
-                  <option value="Superadmin">Superadmin</option>
-                  <option value="Member">Member</option>
-                  <option value="Lead">Lead</option>
-                  <option value="PM">PM</option>
+                  {groupApp.map((item, i) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="permitDone">
@@ -301,10 +335,11 @@ function CreateApp() {
                   <option value="" disabled>
                     Grant permission ...
                   </option>
-                  <option value="Superadmin">Superadmin</option>
-                  <option value="Member">Member</option>
-                  <option value="Lead">Lead</option>
-                  <option value="PM">PM</option>
+                  {groupApp.map((item, i) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -316,15 +351,16 @@ function CreateApp() {
                   <option value="" disabled>
                     Grant permission ...
                   </option>
-                  <option value="Superadmin">Superadmin</option>
-                  <option value="Member">Member</option>
-                  <option value="Lead">Lead</option>
-                  <option value="PM">PM</option>
+                  {groupApp.map((item, i) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
             <div className="footer">
-              <button type="submit" className="btn">
+              <button onClick={() => refreshPage()} type="submit" className="btn">
                 Create New Application
               </button>
             </div>

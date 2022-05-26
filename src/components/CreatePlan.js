@@ -135,7 +135,7 @@ function CreateApp() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await Axios.get("/getApp", { withCredentials: true })
+        const response = await Axios.get("/getApp", { params: { username: localStorage.getItem("username") }, withCredentials: true })
         console.log(response.data)
         setApp(response.data)
       } catch (e) {
@@ -170,6 +170,10 @@ function CreateApp() {
     dispatch({ type: "startDateImmediately", value: state.Plan_startDate.value })
     dispatch({ type: "endDateImmediately", value: state.Plan_endDate.value })
     dispatch({ type: "submitForm" })
+  }
+
+  function refreshPage() {
+    window.location.reload()
   }
 
   if (networkStatus === "resolved") {
@@ -220,7 +224,7 @@ function CreateApp() {
                 <input onChange={e => dispatch({ type: "endDateImmediately", value: e.target.value })} className="form__input" type="date" id="endDate" placeholder="End Date" autoComplete="off" />
               </div>
               <div className="footer">
-                <button type="submit" className="btn">
+                <button onClick={() => refreshPage()} type="submit" className="btn">
                   Create New Plan
                 </button>
               </div>

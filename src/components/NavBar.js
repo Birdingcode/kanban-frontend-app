@@ -27,7 +27,7 @@ function NavBar() {
   function handleLogout() {
     navigate("/")
     appDispatch({ type: "logout" })
-    appDispatch({ type: "flashMessage", value: "You have successfully logged out" })
+    //appDispatch({ type: "flashMessage", value: "You have successfully logged out" })
     Axios.get("/logout", { withCredentials: true })
   }
 

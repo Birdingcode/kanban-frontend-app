@@ -93,8 +93,6 @@ function ChangeGroup() {
         {
           response.data.map((e, i) => {
             let elementConcat = ""
-            elementConcat += e.appAcronym
-            elementConcat += " - "
             elementConcat += e.role
             groupCurrArr.push(elementConcat)
           })
@@ -119,8 +117,6 @@ function ChangeGroup() {
         {
           response.data.map((e, i) => {
             let elementConcat = ""
-            elementConcat += e.appAcronym
-            elementConcat += " - "
             elementConcat += e.role
             groupAppArr.push(elementConcat)
           })
@@ -140,7 +136,7 @@ function ChangeGroup() {
     if (state.submitCount) {
       async function fetchResults() {
         try {
-          const response = await Axios.post("/editGroup", { username: location.state.username, role: currGroup }, { withCredentials: true })
+          const response = await Axios.post("/changeGroup", { username: location.state.username, role: currGroup }, { withCredentials: true })
           if (response.data) {
             navigate("/userManagement")
           }

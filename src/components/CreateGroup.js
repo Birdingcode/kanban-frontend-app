@@ -63,7 +63,6 @@ function CreateGroup() {
           const response = await Axios.post("/createGroup", { role: state.role.value }, { withCredentials: true })
 
           console.log(response)
-          navigate("/userManagement")
         } catch (e) {
           console.log(e.response)
         }
@@ -74,8 +73,12 @@ function CreateGroup() {
 
   function handleSubmit(e) {
     e.preventDefault()
-    dispatch({ type: "groupImmediately", value: state.role.value })
+    dispatch({ type: "groupImmediately", value: e.target.groupName.value })
     dispatch({ type: "submitForm" })
+  }
+
+  function refreshPage() {
+    window.location.reload()
   }
 
   return (
@@ -87,11 +90,11 @@ function CreateGroup() {
               <label className="form__label" htmlFor="groupName">
                 Group Name{" "}
               </label>
-              <input onChange={e => dispatch({ type: "groupImmediately", value: e.target.value })} className="form__input" type="text" id="groupName" placeholder="Group Name" autoComplete="off" />
+              <input className="form__input" type="text" id="groupName" placeholder="Group Name" autoComplete="off" />
             </div>
 
             <div className="footer">
-              <button type="submit" className="btn">
+              <button onClick={() => refreshPage()} type="submit" className="btn">
                 Create Group
               </button>
             </div>

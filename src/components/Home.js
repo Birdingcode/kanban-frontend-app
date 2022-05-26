@@ -10,61 +10,73 @@ import { useNavigate } from "react-router-dom"
 
 function Home() {
   let navigate = useNavigate()
-  const [state, setState] = useImmer([])
+  const [networkStatus, setNetworkStatus] = useState("pending")
+  const [app, setApp] = useImmer([])
+  const [group, setGroup] = useImmer([])
   const appDispatch = useContext(DispatchContext)
-  const [groupAuth, setGroupAuth] = useState()
 
-  // useEffect(() => {
-  //   async function checkGroup() {
-  //     try {
-  //       const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username") }, { withCredentials: true })
-  //       console.log(response.data)
-  //       if (response.data) {
-  //         setGroupAuth(response.data)
-  //       }
-  //       //setState(response.data)
-  //     } catch (e) {
-  //       console.log(e)
-  //     }
-  //   }
-  //   checkGroup()
-  // }, [])
+  const [isPM, setIsPM] = useState(false)
+  const checkPM = () => {
+    let splitGroup = group[0].role.split(",")
+    console.log(splitGroup)
+    for (let i = 0; i < splitGroup.length; i++) {
+      if (splitGroup[i].substring(splitGroup[i].indexOf("_") + 1) === "PM") {
+        setIsPM(true)
+        return
+      }
+    }
+  }
 
   useEffect(() => {
-    //const ourRequest = Axios.CancelToken.source()
-    async function fetchData() {
+    async function fetchUserApp() {
       try {
         const response = await Axios.get("/getApp", { withCredentials: true })
-        console.log(response.data)
-        setState(response.data)
-        //setProfileData(response.data)
+        //console.log(userApp.data)
+        setApp(response.data)
       } catch (e) {
         console.log("There was a problem.")
         console.log(e)
       }
     }
-    fetchData()
-    // return () => {
-    //   ourRequest.cancel()
-    // }
+    async function fetchUserGroup() {
+      try {
+        const userGroup = await Axios.get("/getUserGroup", { params: { username: localStorage.getItem("username") }, withCredentials: true })
+        console.log(userGroup.data)
+        setGroup(userGroup.data)
+        setNetworkStatus("resolved")
+      } catch (e) {
+        console.log("There was a problem.")
+        console.log(e)
+      }
+    }
+    fetchUserApp()
+    fetchUserGroup()
   }, [])
 
+  useEffect(() => {
+    if (group.length) {
+      checkPM()
+    }
+  }, [group])
+
   const getAppTile = proj => {
-    let items = state.map((item, i) => {
+    let items = app.map((item, i) => {
       return (
         <Col key={item.App_Acronym}>
           <Card style={{ margin: "20px", textAlign: "center" }}>
             <Card.Body style={{ padding: "40px" }}>
               <Card.Title>{item.App_Acronym}</Card.Title>
               <Card.Text>{item.App_Description}</Card.Text>
-              <Button
-                onClick={() => {
-                  handleEdit(item.App_Acronym)
-                }}
-                variant="secondary"
-              >
-                Edit
-              </Button>{" "}
+              {isPM ? (
+                <Button
+                  onClick={() => {
+                    handleEdit(item.App_Acronym)
+                  }}
+                  variant="secondary"
+                >
+                  Edit
+                </Button>
+              ) : null}{" "}
               <Button
                 onClick={() => {
                   handleSubmit(item.App_Acronym)
@@ -88,16 +100,19 @@ function Home() {
   function handleEdit(proj) {
     navigate(`/project/edit/${proj}`)
   }
-
-  return (
-    <Page title="Home">
-      <Container>
-        <Row xs={1} md={3}>
-          {getAppTile()}
-        </Row>
-      </Container>
-    </Page>
-  )
+  if (networkStatus === "resolved") {
+    return (
+      <Page title="Home">
+        <Container>
+          <Row xs={1} md={3}>
+            {getAppTile()}
+          </Row>
+        </Container>
+      </Page>
+    )
+  } else {
+    return null
+  }
 }
 
 export default Home

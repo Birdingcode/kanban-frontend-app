@@ -29,6 +29,7 @@ function KBoard() {
   let navigate = useNavigate()
   const { App_Acronym } = useParams()
   const [success, setSuccess] = useState()
+  const [planSuccess, setPlanSuccess] = useState()
   const [plan, setPlan] = useState([])
   const cards = []
   const [networkStatus, setNetworkStatus] = useState("pending")
@@ -267,6 +268,17 @@ function KBoard() {
         console.log(e)
       }
     }
+    async function fetchCheckPlan() {
+      try {
+        const checkPlanResult = await Axios.post("/checkPlan", { username: localStorage.getItem("username") }, { params: { App_Acronym: App_Acronym }, withCredentials: true })
+        console.log(checkPlanResult.data)
+        setPlanSuccess(checkPlanResult.data)
+      } catch (e) {
+        console.log("There was a problem.")
+        console.log(e)
+      }
+    }
+    fetchCheckPlan()
     fetchCreate()
   }, [])
 
@@ -303,13 +315,15 @@ function KBoard() {
                                 <Grid container justify="space-evenly">
                                   <label>Start Date: </label>
                                   <label>{new Date(item.Plan_startDate).toISOString().split("T")[0]}</label>
-                                  <button
-                                    onClick={() => {
-                                      changePlan(item.App_Acronym, item.Plan_name, item.Plan_Description)
-                                    }}
-                                  >
-                                    Edit Plan
-                                  </button>
+                                  {planSuccess === true ? (
+                                    <button
+                                      onClick={() => {
+                                        changePlan(item.App_Acronym, item.Plan_name, item.Plan_Description)
+                                      }}
+                                    >
+                                      Edit Plan
+                                    </button>
+                                  ) : null}
                                 </Grid>
                               </Grid>
                             </Grid>
@@ -333,7 +347,7 @@ function KBoard() {
           <div style={{ marginLeft: "20%" }}>
             <Board
               renderCard={({ title, id, description, owner }) => (
-                <div style={{ marginTop: 10, width: "calc(14vw - 30px)", backgroundColor: "#969FA7", borderRadius: 5 }}>
+                <div style={{ marginTop: 10, width: "calc(14vw - 30px)", backgroundColor: "#969FA7", borderRadius: 5, padding: 5 }}>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <h4 style={{ color: "white", marginRight: 2 }}>{title}</h4>
                     <h5>{owner || "-"}</h5>

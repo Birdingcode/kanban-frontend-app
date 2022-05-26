@@ -8,6 +8,7 @@ import Page from "./Page"
 function UserManagement() {
   const [state, setState] = useImmer([])
   let navigate = useNavigate()
+
   useEffect(() => {
     async function checkGroup() {
       try {
@@ -38,9 +39,6 @@ function UserManagement() {
       }
     }
     fetchData()
-    // return () => {
-    //   ourRequest.cancel()
-    // }
   }, [])
 
   const changeStatus = async (e, username) => {
@@ -98,10 +96,10 @@ function UserManagement() {
     <Page title="User Management">
       <div style={{ display: "flex" }}>
         <Link to={"/userManagement/createUser"} className="nav-item nav-link">
-          <button>Create New User</button>
+          <button style={{ color: "black" }}>Create New User</button>
         </Link>
         <Link to={"/userManagement/createGroup"} className="nav-item nav-link">
-          <button>Create New Group</button>
+          <button style={{ color: "black" }}>Create New Group</button>
         </Link>
       </div>
       <Table striped bordered hover variant="dark">
@@ -109,7 +107,7 @@ function UserManagement() {
           <tr>
             <th>Username</th>
             <th>Email</th>
-            <th>App - Role</th>
+            <th>Group</th>
             <th>Status</th>
             <th>Change Status</th>
             <th>Change Email</th>
@@ -124,23 +122,29 @@ function UserManagement() {
               <td>{item.email}</td>
               <td>
                 {item.usergrp.map((r, k) => (
-                  <div>
-                    {r.App_Acronym} - {r.role}
-                  </div>
+                  <div>{r.role}</div>
                 ))}
               </td>
               <td style={{ color: item.status === true ? "green" : "red" }}>{item.status ? "True" : "False"}</td>
               <td>
-                <button onClick={e => changeStatus(e, item.username)}>Click</button>
+                <button style={{ color: "black" }} onClick={e => changeStatus(e, item.username)}>
+                  Click
+                </button>
               </td>
               <td>
-                <button onClick={e => changeEmail(e, item.email)}>Click</button>
+                <button style={{ color: "black" }} onClick={e => changeEmail(e, item.email)}>
+                  Click
+                </button>
               </td>
               <td>
-                <button onClick={e => changePassword(e, item.username)}>Click</button>
+                <button style={{ color: "black" }} onClick={e => changePassword(e, item.username)}>
+                  Click
+                </button>
               </td>
               <td>
-                <button onClick={e => changeGroup(e, item.username)}>Click</button>
+                <button style={{ color: "black" }} onClick={e => changeGroup(e, item.username)}>
+                  Click
+                </button>
               </td>
             </tr>
           ))}

@@ -64,12 +64,6 @@ function CreateUser() {
       message: "",
       checkCount: 0
     },
-    App_Acronym: {
-      value: "",
-      hasErrors: false,
-      message: "",
-      checkCount: 0
-    },
     role: {
       value: "",
       hasErrors: false,
@@ -154,19 +148,8 @@ function CreateUser() {
         } else {
         }
         return
-      case "acronymImmediately":
-        draft.App_Acronym.hasErrors = false
-        draft.App_Acronym.value = action.value
-        if (draft.App_Acronym.value.length < 3) {
-          draft.App_Acronym.hasErrors = true
-          draft.App_Acronym.message = "Acronym must be 3 characters"
-        }
-        if (!draft.App_Acronym.hasErrors) {
-          draft.App_Acronym.checkCount++
-        }
-        return
       case "submitForm":
-        if (!draft.username.hasErrors && draft.username.isUnique && !draft.oldEmail.hasErrors && draft.oldEmail.isUnique && !draft.password.hasErrors && !draft.App_Acronym.hasErrors) {
+        if (!draft.username.hasErrors && draft.username.isUnique && !draft.oldEmail.hasErrors && draft.oldEmail.isUnique && !draft.password.hasErrors) {
           draft.submitCount++
         }
         return
@@ -221,8 +204,6 @@ function CreateUser() {
         {
           response.data.map((e, i) => {
             let elementConcat = ""
-            elementConcat += e.appAcronym
-            elementConcat += " - "
             elementConcat += e.role
             groupAppArr.push(elementConcat)
           })
@@ -287,7 +268,6 @@ function CreateUser() {
         try {
           const response = await Axios.post("/register", { username: state.username.value, oldEmail: state.oldEmail.value, password: state.password.value, role: personGroup }, { withCredentials: true })
           appDispatch({ type: "login", data: response.data })
-          navigate("/userManagement")
         } catch (e) {
           console.log(e.response)
         }
@@ -307,6 +287,11 @@ function CreateUser() {
     dispatch({ type: "roleImmediately", value: state.role.value })
     dispatch({ type: "submitForm" })
   }
+
+  function refreshPage() {
+    window.location.reload()
+  }
+
   if (networkStatus === "resolved") {
     return (
       <Page title="Creating New User">
@@ -356,7 +341,7 @@ function CreateUser() {
               </div>
             </div>
             <div className="footer">
-              <button type="submit" className="btn">
+              <button onClick={() => refreshPage()} type="submit" className="btn">
                 Create New User
               </button>
             </div>

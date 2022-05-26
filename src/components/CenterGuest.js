@@ -22,7 +22,7 @@ function CenterGuest(props) {
         localStorage.setItem("username", response.data.username)
 
         appDispatch({ type: "login", data: response.data })
-        appDispatch({ type: "flashMessage", value: "You have successfully logged in!" })
+        //appDispatch({ type: "flashMessage", value: "You have successfully logged in!" })
       } else {
         console.log("Incorrect username / password.")
         appDispatch({ type: "flashMessage", value: "Invalid Username / Password." })
