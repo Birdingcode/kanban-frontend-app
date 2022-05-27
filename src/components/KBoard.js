@@ -34,8 +34,6 @@ function KBoard() {
   const cards = []
   const [networkStatus, setNetworkStatus] = useState("pending")
   const [state, setState] = useState()
-
-  //rsuite
   const [open, setOpen] = useState(false)
   const handleOpen = id => {
     setState(id)
@@ -43,20 +41,20 @@ function KBoard() {
   }
   const handleClose = () => setOpen(false)
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await Axios.get("/getTask", { params: { App_Acronym: App_Acronym }, withCredentials: true })
+  async function fetchData() {
+    try {
+      const response = await Axios.get("/getTask", { params: { App_Acronym: App_Acronym }, withCredentials: true })
 
-        console.log(response.data)
-        sortBoard(response.data)
+      console.log(response.data)
+      sortBoard(response.data)
 
-        setNetworkStatus("resolved")
-      } catch (e) {
-        console.log("There was a problem.")
-        console.log(e)
-      }
+      setNetworkStatus("resolved")
+    } catch (e) {
+      console.log("There was a problem.")
+      console.log(e)
     }
+  }
+  useEffect(() => {
     fetchData()
   }, [])
 
@@ -230,9 +228,11 @@ function KBoard() {
         const response = await Axios.post("/checkGroup", { username: localStorage.getItem("username"), Task_id: _card.id, sourceID }, { params: { App_Acronym: App_Acronym }, withCredentials: true })
         //console.log(response.data)
         if (response.data !== false) {
-          //console.log(response.data)
+          console.log(response.data)
+          console.log(destinationID)
 
           setBoard(updatedBoard)
+          fetchData()
         }
       } catch (e) {
         console.log("There was a problem.")
@@ -246,6 +246,7 @@ function KBoard() {
           console.log(response.data)
 
           setBoard(updatedBoard)
+          fetchData()
         }
       } catch (e) {
         console.log("There was a problem.")

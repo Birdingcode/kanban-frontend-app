@@ -242,7 +242,7 @@ function CreateTask() {
               <label className="form__label" htmlFor="taskNotes">
                 Task Notes{" "}
               </label>
-              <input onChange={e => dispatch({ type: "taskNotesImmediately", value: e.target.value })} type="text" id="taskNotes" className="form__input" placeholder="Task Notes" autoComplete="off" />
+              <textarea onChange={e => dispatch({ type: "taskNotesImmediately", value: e.target.value })} id="taskNotes" className="form__input" placeholder="Task Notes" autoComplete="off" />
             </div>
             <div className="taskCreator">
               <label className="form__label" htmlFor="taskCreator">

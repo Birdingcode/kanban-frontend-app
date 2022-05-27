@@ -13,6 +13,8 @@ function TaskModal(props) {
   const [specificTask, setSpecificTask] = useImmer([])
   const [parseNotes, setParseNotes] = useImmer([])
   const [reload, setReload] = useState()
+  const [close, setClose] = useState(false)
+  const [noPermission, setNoPermission] = useState(false)
   // const [plan, setPlan] = useImmer([])
 
   const appDispatch = useContext(DispatchContext)
@@ -128,13 +130,16 @@ function TaskModal(props) {
 
   async function fetchData() {
     try {
-      const response = await Axios.get("/getSpecificTask", { params: { Task_id: props.taskid }, withCredentials: true })
-      const date = new Date(response.data[0].Task_createDate).toISOString().split("T")[0]
-      //console.log(response.data)
-      setSpecificTask(response.data)
-
-      setParseNotes(JSON.parse(response.data[0].Task_notes))
-      dispatch({ type: "acronymImmediately", value: response.data[0].App_Acronym })
+      const response = await Axios.get("/getSpecificTask", { params: { Task_id: props.taskid, username: localStorage.getItem("username") }, withCredentials: true })
+      const date = new Date(response.data.task[0].Task_createDate).toISOString().split("T")[0]
+      console.log(response.data.task)
+      setNoPermission(response.data.noPermission)
+      setSpecificTask(response.data.task)
+      if (response.data.task[0].Task_state === "Close") {
+        setClose(true)
+      }
+      setParseNotes(JSON.parse(response.data.task[0].Task_notes))
+      dispatch({ type: "acronymImmediately", value: response.data.task[0].App_Acronym })
       dispatch({ type: "createDateImmediately", value: date })
       setNetworkStatus("resolved")
     } catch (e) {
@@ -266,8 +271,9 @@ function TaskModal(props) {
                     <div>
                       <label className="form__label-modal" htmlFor="taskNotes">
                         Task Notes{" "}
-                      </label>
-                      <textarea id="taskNotes" className="form__input-modal" placeholder="Task Notes" autoComplete="off" />
+                      </label>{" "}
+                      {console.log(noPermission)}
+                      <textarea id="taskNotes" className="form__input-modal" placeholder="Task Notes" autoComplete="off" readOnly={close || noPermission} style={{ backgroundColor: close || noPermission ? "#ccc" : "white" }} />
                       <button onClick={() => changeNotes()} style={{ marginLeft: "14px" }}>
                         Add Notes
                       </button>
