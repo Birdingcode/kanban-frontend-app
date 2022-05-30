@@ -145,6 +145,9 @@ function ChangePersonalPw() {
             <button type="submit" className="btn">
               Change Password
             </button>
+            <button onClick={() => navigate(-1)} style={{ float: "right", padding: 5, borderRadius: 10, backgroundColor: "#e5e5e5" }}>
+              Back
+            </button>
           </div>
         </div>
       </form>

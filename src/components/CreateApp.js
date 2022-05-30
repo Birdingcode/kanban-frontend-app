@@ -263,10 +263,10 @@ function CreateApp() {
               </div>
 
               <div className="appDesc">
-                <label className="form__label" htmlFor="appDesc">
+                <label className="form__label_desc" htmlFor="appDesc">
                   App Description{" "}
                 </label>
-                <input onChange={e => dispatch({ type: "appDescImmediately", value: e.target.value })} type="text" id="appDesc" className="form__input" placeholder="App Description" autoComplete="off" />
+                <textarea cols="30" rows="3" onChange={e => dispatch({ type: "appDescImmediately", value: e.target.value })} id="appDesc" className="form__input" placeholder="App Description" autoComplete="off" />
               </div>
 
               <div className="startDate">
@@ -362,6 +362,9 @@ function CreateApp() {
             <div className="footer">
               <button onClick={() => refreshPage()} type="submit" className="btn">
                 Create New Application
+              </button>
+              <button onClick={() => navigate("/")} style={{ float: "right", padding: 5, borderRadius: 10, backgroundColor: "#e5e5e5" }}>
+                Back
               </button>
             </div>
           </div>

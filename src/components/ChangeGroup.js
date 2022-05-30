@@ -182,6 +182,9 @@ function ChangeGroup() {
             <button type="submit" className="btn">
               Edit Group
             </button>
+            <button onClick={() => navigate("/userManagement")} style={{ float: "right", padding: 5, borderRadius: 10, backgroundColor: "#e5e5e5" }}>
+              Back
+            </button>
           </div>
         </div>
       </form>

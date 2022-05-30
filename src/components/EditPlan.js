@@ -187,6 +187,9 @@ function EditPlan() {
                 <button type="submit" className="btn">
                   Edit Plan
                 </button>
+                <button onClick={() => navigate(`/project/${App_Acronym}`)} style={{ float: "right", padding: 5, borderRadius: 10, backgroundColor: "#e5e5e5" }}>
+                  Back
+                </button>
               </div>
             </div>
           </div>

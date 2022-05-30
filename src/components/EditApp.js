@@ -258,15 +258,15 @@ function EditApp() {
             <div className="form-body">
               <div className="appAcronym">
                 <label className="form__label" htmlFor="appAcronym">
-                  App Acronym{" "}
+                  App Acronym
                 </label>
                 <input style={{ backgroundColor: "#ccc" }} value={App_Acronym} className="form__input" type="text" id="appAcronym" placeholder="Plan Name" autoComplete="off" readOnly />
               </div>
               <div className="appDesc">
-                <label className="form__label" htmlFor="appDesc">
-                  App Description{" "}
+                <label className="form__label_desc" htmlFor="appDesc">
+                  App Description
                 </label>
-                <input value={state.App_Description.value} onChange={e => dispatch({ type: "appDescImmediately", value: e.target.value })} type="text" id="appDesc" className="form__input" placeholder="App Description" autoComplete="off" />
+                <textarea cols="30" rows="3" value={state.App_Description.value} onChange={e => dispatch({ type: "appDescImmediately", value: e.target.value })} type="text" id="appDesc" className="form__input" placeholder="App Description" autoComplete="off" />
                 <CSSTransition nodeRef={nodeRef} in={state.App_Description.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
                   <div className="alert alert-danger small liveValidateMessage">{state.App_Description.message}</div>
                 </CSSTransition>
@@ -274,20 +274,20 @@ function EditApp() {
 
               <div className="startDate">
                 <label className="form__label" htmlFor="startDate">
-                  Start Date{" "}
+                  Start Date
                 </label>
                 <input value={state.App_startDate.value} onChange={e => dispatch({ type: "startDateImmediately", value: e.target.value })} className="form__input" type="date" id="startDate" placeholder="Start Date" autoComplete="off" />
               </div>
               <div className="endDate">
                 <label className="form__label" htmlFor="endDate">
-                  End Date{" "}
+                  End Date
                 </label>
                 <input value={state.App_endDate.value} onChange={e => dispatch({ type: "endDateImmediately", value: e.target.value })} className="form__input" type="date" id="endDate" placeholder="End Date" autoComplete="off" />
               </div>
 
               <div className="permitOpen">
                 <label className="form__label" htmlFor="permitOpen">
-                  Permit Open{" "}
+                  Permit Open
                 </label>
                 <select value={state.App_permit_Open.value} onChange={e => dispatch({ type: "permitOpen", value: e.target.value })}>
                   {groupApp.map((item, i) => (
@@ -299,7 +299,7 @@ function EditApp() {
               </div>
               <div className="permitToDo">
                 <label className="form__label" htmlFor="permitToDo">
-                  Permit ToDo{" "}
+                  Permit ToDo
                 </label>
                 <select value={state.App_permit_toDoList.value} onChange={e => dispatch({ type: "permitToDo", value: e.target.value })}>
                   {groupApp.map((item, i) => (
@@ -311,7 +311,7 @@ function EditApp() {
               </div>
               <div className="permitDoing">
                 <label className="form__label" htmlFor="permitDoing">
-                  Permit Doing{" "}
+                  Permit Doing
                 </label>
                 <select value={state.App_permit_Doing.value} onChange={e => dispatch({ type: "permitDoing", value: e.target.value })}>
                   {groupApp.map((item, i) => (
@@ -323,7 +323,7 @@ function EditApp() {
               </div>
               <div className="permitDone">
                 <label className="form__label" htmlFor="permitDone">
-                  Permit Done{" "}
+                  Permit Done
                 </label>
                 <select value={state.App_permit_Done.value} onChange={e => dispatch({ type: "permitDone", value: e.target.value })}>
                   {groupApp.map((item, i) => (
@@ -335,7 +335,7 @@ function EditApp() {
               </div>
               <div className="permitCreate">
                 <label className="form__label" htmlFor="permitCreate">
-                  Permit Create{" "}
+                  Permit Create
                 </label>
                 <select value={state.App_permit_Create.value} onChange={e => dispatch({ type: "permitCreate", value: e.target.value })}>
                   {groupApp.map((item, i) => (
@@ -349,6 +349,9 @@ function EditApp() {
             <div className="footer">
               <button type="submit" className="btn">
                 Edit Application
+              </button>
+              <button onClick={() => navigate("/")} style={{ float: "right", padding: 5, borderRadius: 10, backgroundColor: "#e5e5e5" }}>
+                Back
               </button>
             </div>
           </div>

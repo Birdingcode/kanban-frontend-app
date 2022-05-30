@@ -233,16 +233,16 @@ function CreateTask() {
               <input style={{ backgroundColor: "#ccc" }} value={App_Acronym} type="taskCreator" id="appAcronym" className="form__input" placeholder="App Acronym" autoComplete="off" readOnly />
             </div>
             <div className="taskDesc">
-              <label className="form__label" htmlFor="taskDesc">
+              <label className="form__label_desc" htmlFor="taskDesc">
                 Task Description{" "}
               </label>
-              <textarea onChange={e => dispatch({ type: "taskDescImmediately", value: e.target.value })} id="taskDesc" className="form__input" placeholder="Task Description" autoComplete="off" />
+              <textarea cols="30" rows="3" onChange={e => dispatch({ type: "taskDescImmediately", value: e.target.value })} id="taskDesc" className="form__input" placeholder="Task Description" autoComplete="off" />
             </div>
             <div className="taskNotes">
-              <label className="form__label" htmlFor="taskNotes">
+              <label className="form__label_desc" htmlFor="taskNotes">
                 Task Notes{" "}
               </label>
-              <textarea onChange={e => dispatch({ type: "taskNotesImmediately", value: e.target.value })} id="taskNotes" className="form__input" placeholder="Task Notes" autoComplete="off" />
+              <textarea cols="30" rows="3" onChange={e => dispatch({ type: "taskNotesImmediately", value: e.target.value })} id="taskNotes" className="form__input" placeholder="Task Notes" autoComplete="off" />
             </div>
             <div className="taskCreator">
               <label className="form__label" htmlFor="taskCreator">
@@ -260,6 +260,9 @@ function CreateTask() {
           <div className="footer">
             <button type="submit" className="btn">
               Create New Task
+            </button>
+            <button onClick={() => navigate(`/project/${App_Acronym}`)} style={{ float: "right", padding: 5, borderRadius: 10, backgroundColor: "#e5e5e5" }}>
+              Back
             </button>
           </div>
         </div>

@@ -41,6 +41,7 @@ function Home() {
     async function fetchUserGroup() {
       try {
         const userGroup = await Axios.get("/getUserGroup", { params: { username: localStorage.getItem("username") }, withCredentials: true })
+        // '/getUserGroup?username=${localstusername}
         console.log(userGroup.data)
         setGroup(userGroup.data)
         setNetworkStatus("resolved")

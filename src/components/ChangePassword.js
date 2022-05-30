@@ -112,7 +112,7 @@ function ChangePassword() {
     if (state.submitCount) {
       async function fetchResults() {
         try {
-          const response = await Axios.post("/changePassword", { username: location.state.username, password: state.password.value, cfmpassword: state.cfmpassword.value }, { withCredentials: true })
+          const response = await Axios.post(`/${location.state.username}/changePassword/hi`, { password: state.password.value, cfmpassword: state.cfmpassword.value }, { withCredentials: true })
           appDispatch({ type: "login", data: response.data })
           navigate("/userManagement")
         } catch (e) {
@@ -164,6 +164,9 @@ function ChangePassword() {
           <div className="footer">
             <button type="submit" className="btn">
               Change Password
+            </button>
+            <button onClick={() => navigate("/userManagement")} style={{ float: "right", padding: 5, borderRadius: 10, backgroundColor: "#e5e5e5" }}>
+              Back
             </button>
           </div>
         </div>

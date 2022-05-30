@@ -158,6 +158,11 @@ th {
   width: 40%;
 }
 
+.form__label_desc {
+  width: 40%;
+  vertical-align: top;
+}
+
 .form_input {
   width: 60%;
 }
@@ -174,7 +179,7 @@ th {
 
 .form-body-modal {
   text-align: left;
-  padding: 47.5px 1px 1px;
+  padding: 38px 1px 1px;
 }
 
 .form-body-modal > * {
@@ -183,6 +188,11 @@ th {
 
 .form__label-modal {
   width: 30%;
+}
+
+.form__label_desc-modal {
+  width: 30%;
+  vertical-align: top;
 }
 
 .form_input-modal {
@@ -200,7 +210,7 @@ th {
 
 .modalContainer {
   width: 100%;
-  height: 350px;
+  height: 368px;
   /* background: grey; */
   float: left;
 }
@@ -237,4 +247,10 @@ th {
 
 .react-kanban-column {
   width: 14vw;
+}
+
+div.rs-table-body-row-wrapper {
+  position: relative;
+  overflow: scroll;
+  z-index: 0;
 }

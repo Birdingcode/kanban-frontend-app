@@ -97,6 +97,9 @@ function CreateGroup() {
               <button onClick={() => refreshPage()} type="submit" className="btn">
                 Create Group
               </button>
+              <button onClick={() => navigate("/userManagement")} style={{ float: "right", padding: 5, borderRadius: 10, backgroundColor: "#e5e5e5" }}>
+                Back
+              </button>
             </div>
           </div>
         </div>

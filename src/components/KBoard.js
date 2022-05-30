@@ -44,7 +44,7 @@ function KBoard() {
   async function fetchData() {
     try {
       const response = await Axios.get("/getTask", { params: { App_Acronym: App_Acronym }, withCredentials: true })
-
+      console.log("kboard fetch data")
       console.log(response.data)
       sortBoard(response.data)
 
@@ -351,12 +351,14 @@ function KBoard() {
                 <div style={{ marginTop: 10, width: "calc(14vw - 30px)", backgroundColor: "#969FA7", borderRadius: 5, padding: 5 }}>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <h4 style={{ color: "white", marginRight: 2 }}>{title}</h4>
-                    <h5>{owner || "-"}</h5>
+                    <h5>{owner || "-"}</h5> {console.log(owner)}
                   </div>
                   <div>
                     <label>Description: </label>
                     <div>
-                      <p style={{ backgroundColor: "#BAC1C5", borderRadius: 5 }}>{description}</p>
+                      <textarea cols={15} style={{ backgroundColor: "#BAC1C5", borderRadius: 5 }}>
+                        {description}
+                      </textarea>
                     </div>
                   </div>
                   <Button
@@ -379,7 +381,7 @@ function KBoard() {
 
         <div className="modal-container">
           <Modal overflow={true} size={"lg"} open={open} onClose={handleClose}>
-            <TaskModal taskid={state} />
+            <TaskModal taskid={state} fetchData={fetchData} />
             <Modal.Footer>
               <Button onClick={handleClose} appearance="subtle">
                 Cancel

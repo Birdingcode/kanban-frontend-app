@@ -181,6 +181,7 @@ function TaskModal(props) {
         try {
           const response = await axios.post("/changeTaskNotes", { Task_id: props.taskid, Task_notes: state.Task_notes.value, username: localStorage.getItem("username") }, { withCredentials: true })
           console.log(response.data)
+          props.fetchData()
         } catch (e) {
           console.log("There was a problem.")
           console.log(e)
@@ -217,13 +218,13 @@ function TaskModal(props) {
                   <div className="form-body-modal">
                     <div className="taskName">
                       <label className="form__label-modal" htmlFor="taskName">
-                        Task Name{" "}
+                        Task Name
                       </label>
                       <input style={{ backgroundColor: "#ccc" }} value={specificTask[0].Task_name} className="form__input-modal" type="text" id="taskName" placeholder="Task Name" autoComplete="off" readOnly />
                     </div>
                     <div className="planName">
                       <label className="form__label-modal" htmlFor="planName">
-                        Plan Name{" "}
+                        Plan Name
                       </label>
                       <input style={{ backgroundColor: "#ccc" }} value={specificTask[0].Plan_name === null ? "-No Plan-" : specificTask[0].Plan_name} className="form__input-modal" type="text" id="planName" placeholder="Plan Name" autoComplete="off" readOnly />
                     </div>
@@ -249,15 +250,15 @@ function TaskModal(props) {
                   </div> */}
                     <div className="appAcronym">
                       <label className="form__label-modal" htmlFor="appAcronym">
-                        App Acronym{" "}
+                        App Acronym
                       </label>
                       <input style={{ backgroundColor: "#ccc" }} value={specificTask[0].App_Acronym} type="text" id="appAcronym" className="form__input-modal" placeholder="App Acronym" autoComplete="off" readOnly />
                     </div>
                     <div>
-                      <label className="form__label-modal" htmlFor="taskDesc">
-                        Task Description{" "}
+                      <label className="form__label_desc-modal" htmlFor="taskDesc">
+                        Task Description
                       </label>
-                      <textarea style={{ backgroundColor: "#ccc" }} value={specificTask[0].Task_description} id="taskDesc" className="form__input-modal" placeholder="Task Description" autoComplete="off" readOnly />
+                      <textarea cols="25" rows="3" style={{ backgroundColor: "#ccc" }} value={specificTask[0].Task_description} id="taskDesc" className="form__input-modal" placeholder="Task Description" autoComplete="off" readOnly />
                     </div>
                     {/* <div>
                     <label className="form__label-modal" htmlFor="taskDesc">
@@ -269,25 +270,25 @@ function TaskModal(props) {
                     </button>
                   </div> */}
                     <div>
-                      <label className="form__label-modal" htmlFor="taskNotes">
-                        Task Notes{" "}
-                      </label>{" "}
+                      <label className="form__label_desc-modal" htmlFor="taskNotes">
+                        Task Notes
+                      </label>
                       {console.log(noPermission)}
-                      <textarea id="taskNotes" className="form__input-modal" placeholder="Task Notes" autoComplete="off" readOnly={close || noPermission} style={{ backgroundColor: close || noPermission ? "#ccc" : "white" }} />
-                      <button onClick={() => changeNotes()} style={{ marginLeft: "14px" }}>
+                      <textarea cols="25" rows="3" id="taskNotes" className="form__input-modal" placeholder="Task Notes" autoComplete="off" readOnly={close || noPermission} style={{ backgroundColor: close || noPermission ? "#ccc" : "white" }} />
+                      <button onClick={() => changeNotes()} style={{ marginLeft: "12px", verticalAlign: "top" }}>
                         Add Notes
                       </button>
                     </div>
                     <div className="taskCreator">
                       <label className="form__label-modal" htmlFor="taskCreator">
-                        Task Creator{" "}
+                        Task Creator
                       </label>
                       <input style={{ backgroundColor: "#ccc" }} value={specificTask[0].Task_creator} type="taskCreator" id="taskCreator" className="form__input-modal" placeholder="Task Creator" autoComplete="off" readOnly />
                     </div>
 
                     <div className="createDate">
                       <label className="form__label-modal" htmlFor="createDate">
-                        Create Date{" "}
+                        Create Date
                       </label>
                       <input style={{ backgroundColor: "#ccc" }} value={state.Task_createDate.value} className="form__input-modal" type="date" id="createDate" placeholder="Create Date" autoComplete="off" readOnly />
                     </div>
@@ -297,12 +298,12 @@ function TaskModal(props) {
             </div>
 
             <div className="right">
-              {" "}
               <Table
                 virtualized
                 wordWrap
                 height={350}
                 data={parseNotes}
+                className="overflow-custom"
                 onRowClick={data => {
                   console.log(data)
                 }}
